@@ -1,8 +1,9 @@
 #include "Process.h"
+#include <chrono>
+#include <iostream> 
+using namespace std::chrono::system_clock; 
 
-using namespace std;
-
-Process::Process(int time_required){
+Process::Process(duration time_required){
 
     total_CPU_time_required = time_required;
     arrival_time = 0.0;
@@ -12,42 +13,49 @@ Process::Process(int time_required){
 
 }
 
-int Process::get_CPU_time_required(){
+duration Process::get_CPU_time_required(){
    return total_CPU_time_required;
 }
 
-void Process::set_CPU_time_required(int time){
+void Process::set_CPU_time_required(duration time){
     total_CPU_time_required = time;
 }
 
-double Process::get_arrival_time(){
+time_point Process::get_arrival_time(){
     return arrival_time;
 }
 
-void Process::set_arrival_time(double time){
+void Process::set_arrival_time(time_point time){
     arrival_time = time;
 }
 
-double Process::get_completetion_time(){
+time_point Process::get_completetion_time(){
     return completion_time;
 }
 
-void Process::set_completion_time(double time){
+void Process::set_completion_time(time_point time){
     completion_time = time;
 }
-
-double Process::get_latest_time_quantum(){
+duration Process::get_latest_time_quantum(){
     return latest_time_quantum;
 }
 
-void Process::set_latest_time_quantum(double time){
+void Process::set_latest_time_quantum(duration time){
     latest_time_quantum= time;
 }
 
-double Process::get_CPU_time_remaining(){
+duration Process::get_CPU_time_remaining(){
     return CPU_time_remaining;
 }
 
-void Process::set_CPU_time_remaining(double time){
+void Process::set_CPU_time_remaining(duration time){
     CPU_time_remaining = time;
 }
+
+duration Process::getWaitingTime()
+{
+    waiting_time = now() -  arrival_time.time_since_epoch();  
+	return waiting_time; 
+}
+
+

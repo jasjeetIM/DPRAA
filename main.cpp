@@ -1,8 +1,10 @@
 #include <iostream>
 #include <cstdlib>
-#include <ctime>
+#include <chrono>
 #include <vector>
 #include "Process.h"
+#include "DPRRA.h"
+#include <time.h>
 
 using namespace std;
 
@@ -14,23 +16,25 @@ void create_processes(vector<Process> & process_array);
 
 int main () {
     srand(time(NULL));   // using a different seed value for random number generator
-    vector<Process> process_array;
-    create_processes(process_array);
+    DPRRA Dynamic_RRA;
+    vector<Process> process_array; //vector of processes
+    create_processes(process_array); // function that will populate the vector with processes
 
-    for (int i = 0; i < process_array.size(); i++)
-    {
-        cout << "Time required by process " << i << " is: " << process_array[i].get_CPU_time_required() << endl;
-    }
+   cout << "staring algo" << endl;    
+Dynamic_RRA.simulate_DPRRA(process_array);
+
+    cout << "Algorithm has been completed " << endl;
 
     return 0;
 }
 
 void create_processes(vector<Process> & process_array) {
 
-    /* Create NUMBER_OF_PROCESSES number of processes, each with a random amount of CPU time required */
+    /* Create NUMBER_OF_PROCESSES number of processes, each with an arbitrary amount of CPU time required */
     for (int i = 0; i<NUMBER_OF_PROCESSES; i++)
     {
-        process_array.push_back(Process(rand()%MAX_CPU_TIME));
+        chrono::system_clock::duration time = rand()%MAX_CPU_TIME;
+        process_array.push_back(Process(time));
     }
 
 }

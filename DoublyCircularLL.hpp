@@ -8,6 +8,7 @@
 #define DOUBLYCIRCULARLL_H
 
 #include <cstdlib>
+#include "Process.h"
 
 // include libraries
 
@@ -29,7 +30,7 @@ class DoublyCircularLL {
          _curr = NULL;
       }
 
-      void insert(void * data);
+      void insert(Process * data);
       void remove();
       bool stepNext();
       void * getCurrent();
@@ -38,7 +39,7 @@ class DoublyCircularLL {
 
    private:
       struct DCLLNode {
-         void * data;
+         Process * data;
          DCLLNode * prev;
          DCLLNode * next;
       };
