@@ -7,24 +7,24 @@ LFLAGS = -Wall $(DEBUG)
 TP:    $(OBJS)
 	$(CC) $(LFLAGS) $(OBJS) -o TP -lpthread
 
-main.o: main.cpp Process.h DPRRA.h
+main.o: main.cpp Process.hpp DPRRA.hpp
 	$(CC) $(CFLAGS) main.cpp
 
-DPRRA.o: DPRRA.h DPRRA.cpp Process.h DCLL.h
+DPRRA.o: DPRRA.hpp DPRRA.cpp Process.hpp DCLL.hpp
 	$(CC) $(CFLAGS) DPRRA.cpp -lpthread
 
-DCLL.o: DCLL.h DCLL.cpp DCLLNode.h
+DCLL.o: DCLL.hpp DCLL.cpp DCLLNode.hpp
 	$(CC) $(CFLAGS) DCLL.cpp
 
-DCLLNode.o: DCLLNode.h DCLLNode.cpp
+DCLLNode.o: DCLLNode.hpp DCLLNode.cpp
 	$(CC) $(CFLAGS) DCLLNode.cpp
 
-Process.o: Process.h Process.cpp
-	$(CC) $(CFLAGS) Process.cpp 
+Process.o: Process.hpp Process.cpp
+	$(CC) $(CFLAGS) Process.cpp
 
 clean:
 	\rm *.o TP
 
 tar:
-	tar cfv TP.tar main.cpp DPRRA.h DPRRA.cpp \
-                DCLL.h DCLL.cpp DCLLNode.h DCLLNode.cpp Process.h Process.cpp
+	tar cfv TP.tar main.cpp DPRRA.hpp DPRRA.cpp DCLL.hpp DCLL.cpp \
+					DCLLNode.hpp DCLLNode.cpp Process.hpp Process.cpp
