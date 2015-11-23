@@ -44,12 +44,12 @@ void *DPRRA:: process_adder_thread(void){
 //        pthread_mutex_unlock(&lock); 
 	for (unsigned int i = 0; i<size; i++)
     	{
-        	chrono::system_clock:: time_point now = chrono::system_clock::now();     
+        	chrono::system_clock::time_point curr  = chrono::system_clock::now();     
 	// pthread_mutex_lock(&print);    
 	//	cout << "adder thread is running " << endl; 
         //	pthread_mutex_unlock(&print); 
 //		pthread_mutex_lock(&lock); 
-       		 (*array_pointer)[i].set_arrival_time(now); 
+       		 (*array_pointer)[i].set_arrival_time(curr); 
 		process_list->insertNode(&(*array_pointer)[i]);
  //      		cout << "added one job to list " << endl;
 //		 pthread_mutex_unlock(&lock);
@@ -84,7 +84,7 @@ void * DPRRA::CPU_scheduler_thread(void){
 //	pthread_mutex_lock(&lock); 
         number_of_jobs = array_pointer->size();
   //      pthread_mutex_unlock(&lock);  
-	chrono::system_clock::duration time_quanta, process_waiting_time, total_time, process_time_remaining;
+	long int time_quanta, process_waiting_time, total_time, process_time_remaining;
 
    	 while ( started == false) // Wait until the list has at least 1 process
     	{
@@ -108,7 +108,7 @@ void * DPRRA::CPU_scheduler_thread(void){
 //		    	              pthread_mutex_lock(&lock)	
 		 			total_time = process_list->getTotalTime(); // total waiting time for all the processes in the list
           		 	
-					process_waiting_time = CPU->getData()->getWaitingTime(
+					process_waiting_time = CPU->getData()->getWaitingTime(); 
 						cout << process_waiting_time  << endl;
                     		      	time_quanta = ((process_waiting_time)/total_time)*MAX_TIME_QUANTA; // quanta = (process waiting time)/(total waiting time)*(max time quanta)
 

@@ -33,8 +33,9 @@ void create_processes(vector<Process> & process_array) {
     /* Create NUMBER_OF_PROCESSES number of processes, each with an arbitrary amount of CPU time required */
     for (int i = 0; i<NUMBER_OF_PROCESSES; i++)
     {
-        chrono::system_clock::duration time = rand()%MAX_CPU_TIME;
-        process_array.push_back(Process(time));
+        typedef std::chrono::duration<long int, ratio<1,1000000000> > nanoseconds; 
+        nanoseconds p_time(rand()%MAX_CPU_TIME);  
+        process_array.push_back(Process(std::chrono::duration_cast<nanoseconds>(p_time).count()));
     }
 
 }

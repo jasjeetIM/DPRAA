@@ -1,5 +1,5 @@
 OBJS = main.o DPRRA.o DCLL.o DCLLNode.o Process.o
-CC = g++
+CC = g++ -std=c++0x
 DEBUG = -g
 CFLAGS = -Wall -c $(DEBUG)
 LFLAGS = -Wall $(DEBUG)

@@ -38,7 +38,7 @@ private:
       int getSize();
       DCLLNode * getHead();
       DCLLNode * getTail();
-      double getTotalTime();
+      long int getTotalTime();
       bool isEmpty();
 
 

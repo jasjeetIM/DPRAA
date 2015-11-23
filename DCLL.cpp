@@ -77,10 +77,10 @@ bool DCLL::isEmpty() {
    return _size == 0;
 }
 
-chrono::system_clock::duration DCLL::getTotalTime()
+long int DCLL::getTotalTime()
 {
     DCLLNode * temp = _head;
-    chrono::system_clock::duration total_time;
+    long int total_time;
 
     for (int i = 0; i< _size; i++)
     {
