@@ -24,10 +24,11 @@ class DCLLNode {
    public:
       // function declarations
       DCLLNode();
+      ~DCLLNode() {}
       DCLLNode * getNext();
       void setNext(DCLLNode * nextNode);
-      DCLLNode * getPrevious();
-      void setPrevious(DCLLNode * prevNode);
+      DCLLNode * getPrev();
+      void setPrev(DCLLNode * prevNode);
       Process * getData();
       void setData(Process * new_data);
 };

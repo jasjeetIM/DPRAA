@@ -22,7 +22,7 @@ class DCLL {
       int _size;
 
    public:
-      // constructors
+      // constructor
       DCLL() {
          _size = 0;
          _head = NULL;
