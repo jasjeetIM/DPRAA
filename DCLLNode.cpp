@@ -21,11 +21,12 @@ void DCLLNode::setNext(DCLLNode * nextNode){
 }
 
 DCLLNode * DCLLNode::getPrevious(){
-    return prev;
+  cout << "Node:  " << this<< " Prev: " << prev  << endl; 
+   return prev;
 }
 
 void DCLLNode::setPrevious(DCLLNode * prevNode){ 
-   prev = prevNode;
+        prev = prevNode; 
 }
 
 Process * DCLLNode::getData(){
