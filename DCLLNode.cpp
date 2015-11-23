@@ -1,7 +1,7 @@
 #include "DCLLNode.h"
 #include <cstdlib>
 #include <iostream> 
-class Process;
+#include "Process.h"
 
 using namespace std;
 
@@ -9,7 +9,9 @@ DCLLNode::DCLLNode(){
     prev = NULL;
     next = NULL;
     data = NULL;
+   counter = 0; 
 }
+
 
 
 DCLLNode * DCLLNode::getNext(){
@@ -21,11 +23,11 @@ void DCLLNode::setNext(DCLLNode * nextNode){
 }
 
 DCLLNode * DCLLNode::getPrevious(){
-  cout << "Node:  " << this<< " Prev: " << prev  << endl; 
-   return prev;
+   return this->prev;
 }
 
 void DCLLNode::setPrevious(DCLLNode * prevNode){ 
+       counter++; 
         prev = prevNode; 
 }
 

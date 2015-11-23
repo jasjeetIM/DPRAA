@@ -29,29 +29,29 @@ void DCLL::insertNode(Process * data) {
       _tail->setNext(_head);     
   }
    ++_size;
-}
 
+}
 void DCLL::removeNode(DCLLNode * node_to_remove) {
    DCLLNode * node = node_to_remove;
-	DCLLNode * nxt, * prv; 
+	DCLLNode * nxt, * prv;
    if (_size == 0) {
       return;
    }
 
    else if (_size == 1) {
-      cout << "size is 1" <<endl;
 	_head = NULL;
       _tail = NULL;
    }
 
-   else {
-	cout << "size is greater than 1" <<endl;
-      prv = node->getPrevious(); 
-      nxt = node->getNext(); 
-	cout << prv << " and " << nxt << endl;
-	prv->setNext(nxt);
-        nxt->setPrevious(prv);
-   }
+   else if (_size > 1) {
+		prv = node->getPrevious(); 
+      		nxt = node->getNext(); 
+		prv->setNext(nxt);
+        	nxt->setPrevious(prv);
+         if (node == _head) _head = nxt; 
+         else if  (node == _tail) _tail = prv; 
+
+	}
 
    delete node;
    --_size;
@@ -77,6 +77,7 @@ bool DCLL::isEmpty() {
 
 long int DCLL::getTotalTime()
 {
+
     DCLLNode * temp = _head;
     long int total_time;
 
@@ -84,8 +85,6 @@ long int DCLL::getTotalTime()
     {
         total_time+=temp->getData()->getWaitingTime();
         temp=temp->getNext();
-	}
-
-    delete temp;
+	};
     return total_time;
 }

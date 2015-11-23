@@ -47,12 +47,11 @@ void *DPRRA:: process_adder_thread(void){
 		pthread_mutex_lock(&lock); 
        		 (*array_pointer)[i].set_arrival_time(curr); 
 		process_list->insertNode(&(*array_pointer)[i]);
-		cout << "head is " << process_list->getHead() << " prv is " << process_list->getHead()->getPrevious() << endl;		
 	 pthread_mutex_unlock(&lock);
     
 
     }
-
+cout << "All jobs have been added " << endl;
 return 0; 
 }
 
@@ -98,18 +97,17 @@ void * DPRRA::CPU_scheduler_thread(void){
 		    	              pthread_mutex_lock(&lock); 	
 		 			total_time = process_list->getTotalTime(); // total waiting time for all the processes in the list
 					process_waiting_time = CPU->getData()->getWaitingTime(); 
-						cout << "Process waiting time is" << process_waiting_time  << endl;
+						cout << "Current Job waiting time is" << process_waiting_time  << endl;
                     		      	time_quanta = ((process_waiting_time)/total_time)*MAX_TIME_QUANTA; // quanta = (process waiting time)/(total waiting time)*(max time quanta)
 
                     			process_time_remaining = (CPU->getData()->get_CPU_time_remaining())- time_quanta;
                     			CPU->getData()->set_CPU_time_remaining(process_time_remaining); // update process's time remaining
                     			temp = CPU->getNext();
-                                    
-				   
+                                                                             
+				                                             
                     			if (process_time_remaining <= 0)
-                    			{	cout << "Getting prev now " << endl; 
-						cout << process_list->getHead()->getPrevious() << endl;
-						process_list->removeNode(process_list->getHead());
+                    			{	DCLLNode * t = process_list->getHead(); 
+						process_list->removeNode(t);
 			
                         			number_of_jobs_completed++;
                                           

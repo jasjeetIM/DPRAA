@@ -8,7 +8,8 @@ class Process;
 class DCLLNode{
 private:
     DCLLNode * prev, * next;
-    Process * data;
+int counter;    
+Process * data;
 public:
     DCLLNode();
     DCLLNode * getNext();
