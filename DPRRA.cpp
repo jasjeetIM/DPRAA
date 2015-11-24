@@ -88,12 +88,12 @@ void * DPRRA::CPU_scheduler_thread(void) {
       if (list_size > 0) { // processing of one job at a time
          pthread_mutex_lock(&lock);
          total_time = process_list->getTotalTime(); // total waiting time for all processes in the list
-         waiting_time = CPU->getData()->getWaitingTime();
+         waiting_time = CPU->getData()->get_waiting_time();
          cout << "Current Job waiting time is " << waiting_time << endl;
 
          time_quanta = (waiting_time / total_time) * MAX_TIME_QUANTA;
-         time_remaining = CPU->getData()->get_CPU_time_remaining() - time_quanta;
-         CPU->getData()->set_CPU_time_remaining(time_remaining);
+         time_remaining = CPU->getData()->get_time_remaining() - time_quanta;
+         CPU->getData()->set_time_remaining(time_remaining);
 
          temp = CPU->getNext();
          if (time_remaining <= 0) {

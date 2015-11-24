@@ -6,56 +6,129 @@
 
 #include "Process.hpp"
 
-using namespace std;
-
-Process::Process(long int time_required) {
-    total_CPU_time_required = time_required;
-    latest_time_quantum = 0.0;
-    CPU_time_remaining = 0.0;
+/*
+ * This is the constructor that creates job based on total CPU time required to
+ * finish the job.
+ *    Complexity: O(1)
+ *         Input: time required
+ *        Output: none
+ */
+Process::Process(long int t) {
+   time_required = t;
+   latest_tq = 0.0;
+   time_remaining = 0.0;
 }
 
-long int Process::get_CPU_time_required() {
-   return total_CPU_time_required;
+/*
+ * This function get the total CPU time required to finish the job.
+ *    Complexity: O(1)
+ *         Input: none
+ *        Output: time required
+ */
+long int Process::get_time_required() {
+   return time_required;
 }
 
-void Process::set_CPU_time_required(long int time) {
-   total_CPU_time_required = time;
+/*
+ * This function set the total CPU time required to finish the job.
+ *    Complexity: O(1)
+ *         Input: time required
+ *        Output: none
+ */
+void Process::set_time_required(long int t) {
+   time_required = t;
 }
 
-chrono::system_clock::time_point Process::get_arrival_time() {
+/*
+ * This function get the clock time that the process arrived at CPU/system.
+ *    Complexity: O(1)
+ *         Input: none
+ *        Output: arrival time
+ */
+system_clock::time_point Process::get_arrival_time() {
    return arrival_time;
 }
 
-void Process::set_arrival_time(chrono::system_clock::time_point time) {
-   arrival_time = time;
+/*
+ * This function get the clock time that the process arrived at CPU/system.
+ *    Complexity: O(1)
+ *         Input: arrival time
+ *        Output: none
+ */
+void Process::set_arrival_time(system_clock::time_point t) {
+   arrival_time = t;
 }
 
+/*
+ * This function get the clock time that the process was completed.
+ *    Complexity: O(1)
+ *         Input: none
+ *        Output: completion time
+ */
 system_clock::time_point Process::get_completetion_time() {
    return completion_time;
 }
 
-void Process::set_completion_time(chrono::system_clock::time_point time) {
-   completion_time = time;
+/*
+ * This function set the clock time that the process was completed.
+ *    Complexity: O(1)
+ *         Input: completion time
+ *        Output: none
+ */
+void Process::set_completion_time(system_clock::time_point t) {
+   completion_time = t;
 }
 
-long int Process::get_latest_time_quantum() {
-   return latest_time_quantum;
+/*
+ * This function get the time_quantum that the process will be executed for in
+ * the CPU, calculated before CPU entry.
+ *    Complexity: O(1)
+ *         Input: none
+ *        Output: lastest time quantum
+ */
+long int Process::get_latest_tq() {
+   return latest_tq;
 }
 
-void Process::set_latest_time_quantum(long int time) {
-   latest_time_quantum= time;
+/*
+ * This function set the time_quantum that the process will be executed for in
+ * the CPU, calculated before CPU entry.
+ *    Complexity: O(1)
+ *         Input: lastest time quantum
+ *        Output: none
+ */
+void Process::set_latest_tq(long int t) {
+   latest_tq = t;
 }
 
-long int Process::get_CPU_time_remaining() {
-   return CPU_time_remaining;
+/*
+ * This function get the amount of time remaining to complete this process.
+ *    Complexity: O(1)
+ *         Input: none
+ *        Output: time remaining
+ */
+long int Process::get_time_remaining() {
+   return time_remaining;
 }
 
-void Process::set_CPU_time_remaining(long int time) {
-   CPU_time_remaining = time;
+/*
+ * This function set the amount of time remaining to complete this process.
+ *    Complexity: O(1)
+ *         Input: time remaining
+ *        Output: none
+ */
+void Process::set_time_remaining(long int t) {
+   time_remaining = t;
 }
 
-long int Process::getWaitingTime() {
-   chrono::system_clock::time_point a = chrono::system_clock::now();
-   waiting_time = a.time_since_epoch().count() - arrival_time.time_since_epoch().count();
+/*
+ * This function calculates the waiting time of the process.
+ *    Complexity: O(1)
+ *         Input: none
+ *        Output: waiting time
+ */
+long int Process::get_waiting_time() {
+   system_clock::time_point tp = system_clock::now();
+   waiting_time = tp.time_since_epoch().count() - arrival_time.time_since_epoch().count();
    return waiting_time;
 }

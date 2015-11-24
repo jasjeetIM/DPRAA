@@ -20,13 +20,13 @@ void DCLL::insertNode(Process * data) {
    if (_size == 0) {
       _head = node;
       _tail = node;
-      node->setPrevious(_tail);
+      node->setPrev(_tail);
       node->setNext(_head);
    } else {
       _tail->setNext(node);
-      node->setPrevious(_tail);
+      node->setPrev(_tail);
       _tail = node;
-      _head->setPrevious(_tail);
+      _head->setPrev(_tail);
       _tail->setNext(_head);
    }
    ++_size;
@@ -39,7 +39,6 @@ void DCLL::insertNode(Process * data) {
  *        Output: none
  */
 void DCLL::removeNode(DCLLNode * node) {
-   // DCLLNode *node = node_to_remove;
    DCLLNode *next, *prev;
 
    if (_size == 0) {
@@ -115,7 +114,7 @@ long int DCLL::getTotalTime() {
    long int total_time = 0;
 
    for (int i = 0; i < _size; ++i) {
-      total_time += temp->getData()->getWaitingTime();
+      total_time += temp->getData()->get_waiting_time();
       temp = temp->getNext();
 	}   return total_time;
 }
