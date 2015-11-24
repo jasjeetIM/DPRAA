@@ -9,6 +9,7 @@
 #include <time.h>
 #include <vector>
 
+#include "RRA.hpp"
 #include "DPRRA.hpp"
 #include "Process.hpp"
 
@@ -21,14 +22,19 @@ void create_processes(vector<Process> & processes);
 
 int main () {
    DPRRA Dynamic_RRA;
+   RRA trad_RRA;
    vector<Process> processes;
 
    srand(time(NULL)); // using a different seed value for random number generator
    create_processes(processes); // function that will populate the vector with processes
 
-   cout << "Starting Algorithm" << endl;
+   cout << "Starting Dynamic Priority-based Round Robin Algorithm" << endl;
    Dynamic_RRA.simulate_DPRRA(processes);
-   cout << "Algorithm has been completed " << endl;
+   cout << "Dynamic Priority-based Round Robin Algorithm has been completed";
+
+   cout << endl << endl << "Starting Round Robin Algorithm" << endl;
+   trad_RRA.simulate_RRA(processes);
+   cout << "Round Robin Algorithm has been completed" << endl;
 
    return 0;
 }
