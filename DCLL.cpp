@@ -7,7 +7,7 @@
 #include "DCLL.hpp"
 
 /*
- * This function inserts a node containing a Process into the DCLL. 
+ * This function inserts a node containing a Process into the DCLL.
  *    Complexity: O(1)
  *         Input: data
  *        Output: none
@@ -33,7 +33,7 @@ void DCLL::insertNode(Process * data) {
 }
 
 /*
- * This function remove a specific node from DCLL.
+ * This function removes a specific node from DCLL.
  *    Complexity: O(1)
  *         Input: node to remove
  *        Output: none
@@ -84,7 +84,7 @@ DCLLNode * DCLL::getTail() {
 }
 
 /*
- * This function get the size of DCLL.
+ * This function gets the size of DCLL.
  *    Complexity: O(1)
  *         Input: none
  *        Output: size
@@ -104,7 +104,7 @@ bool DCLL::isEmpty() {
 }
 
 /*
- * This function get the total waiting time of all the processes in the DCLL.
+ * This function gets the total waiting time of all the processes in the DCLL.
  *    Complexity: O(n)
  *         Input: none
  *        Output: total waiting time

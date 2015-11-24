@@ -39,7 +39,7 @@ void DCLLNode::setNext(DCLLNode * nextNode) {
 }
 
 /*
- * This function get the previous node of this node.
+ * This function gets the previous node of this node.
  *    Complexity: O(1)
  *         Input: none
  *        Output: prev
@@ -49,7 +49,7 @@ DCLLNode * DCLLNode::getPrev() {
 }
 
 /*
- * This function set the previous node of this node.
+ * This function sets the previous node of this node.
  *    Complexity: O(1)
  *         Input: none
  *        Output: next
@@ -59,7 +59,7 @@ void DCLLNode::setPrev(DCLLNode * prevNode) {
 }
 
 /*
- * This function get the data of this node.
+ * This function gets the data of this node.
  *    Complexity: O(1)
  *         Input: none
  *        Output: data
@@ -69,7 +69,7 @@ Process * DCLLNode::getData() {
 }
 
 /*
- * This function set the data of this node.
+ * This function sets the data of this node.
  *    Complexity: O(1)
  *         Input: data
  *        Output: none
