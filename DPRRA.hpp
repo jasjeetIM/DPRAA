@@ -35,11 +35,11 @@ class DPRRA {
       DPRRA(); // constructor
       ~DPRRA(); // destructor
       DCLL * getList(); // returns process_list
-      static void * process_adder(void * process_array);
-      static void * CPU_scheduler(void * process_array);
-      void * process_adder_thread();
-      void * CPU_scheduler_thread();
-      void simulate_DPRRA(vector<Process> &process_array);
+      static void * process_adder(void * process_array); //static function to start a thread for adding jobs to the DCLL
+      static void * CPU_scheduler(void * process_array); // static function to start a thread for processing jobs in the DCLL
+      void * process_adder_thread(); // thread to add jobs in the DCLL 
+      void * CPU_scheduler_thread(); // thread to process jobs in the DCLL
+      void simulate_DPRRA(vector<Process> &process_array); // primary funciton that spawns both adder thread and the scheduler thread
 };
 
 #endif // DPRRA_HPP

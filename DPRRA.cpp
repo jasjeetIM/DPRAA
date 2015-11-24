@@ -6,30 +6,71 @@
 
 #include "DPRRA.hpp"
 
+/*
+ * This is the constructor for a DPRRA object which contains a DCLL.
+ * finish the job.
+ *    Complexity: O(1)
+ *         Input: time required
+ *        Output: none
+ */
 DPRRA::DPRRA() {
    process_list = new DCLL;
 }
 
+/*
+ * This is the destructor for DPRRA which deletes the DCLL upon being called.
+ *    Complexity: O(1)
+ *         Input: time required
+ *        Output: none
+ */
 DPRRA::~DPRRA() {
    delete process_list;
 }
 
+/*
+ *  This function returns a pointer to the DCLL.
+ *         Complexity: O(1)
+ *         Input: time required
+ *        Output: none
+ */
 DCLL * DPRRA::getList() {
    return process_list;
 }
 
+/*
+ * This static function is executed in a new thread. It then
+ * calls the process_adder_thread() function which enables multithreading.
+ *    Complexity: O(1)
+ *         Input: time required
+ *        Output: none
+ */
 void * DPRRA::process_adder(void * param) {
    DPRRA *non_static_object = (DPRRA *)param;
    non_static_object->process_adder_thread();
    pthread_exit(0);
 }
 
+/*
+ * This static function is executed in a new thread. It then
+ * calls the CPU_scheduler_thread() function which enables multithreading.
+ *    Complexity: O(1)
+ *         Input: time required
+ *        Output: none
+ */
 void * DPRRA::CPU_scheduler(void * param) {
    DPRRA *non_static_object = (DPRRA *)param;
    non_static_object->CPU_scheduler_thread();
    pthread_exit(0);
 }
 
+
+/*
+ * This is a member function that adds new DCLLNodes to the DCLL. Each node
+ * contains a process from the process array that is passed to the simulate_DPRRA() function.
+ *    Complexity: O(1)
+ *         Input: time required
+ *        Output: none
+ */
 void * DPRRA::process_adder_thread(void) {
    chrono::system_clock::time_point curr;
 
@@ -45,16 +86,29 @@ void * DPRRA::process_adder_thread(void) {
       pthread_mutex_unlock(&lock);
    }
 
+    pthread_mutex_lock(&print);
    cout << "All jobs have been added" << endl;
+   pthread_mutex_unlock(&print);
    return 0;
 }
 
+
+/*
+ * This is a member function that processes each node in the DCLL using
+ * the DPRRA algorithm. It calculates time_quanta for every node and then
+ * processes that node. Once the node has been processed (job has been completed),
+ * it then removes that node from the DCLL and marks the completion time in the job (Process).
+ *    Complexity: O(1)
+ *         Input: time required
+ *        Output: none
+ */
 void * DPRRA::CPU_scheduler_thread(void) {
-   DCLLNode *temp, *t;
+   DCLLNode *temp, *tempNode;
    DCLLNode *CPU = 0;
    bool started = false;
    unsigned int number_of_jobs_completed, list_size, number_of_jobs;
    long int time_quanta, total_time, waiting_time, time_remaining;
+   chrono::system_clock::time_point completion_time;
 
    while (CPU == NULL) {
       pthread_mutex_lock(&lock);
@@ -89,7 +143,11 @@ void * DPRRA::CPU_scheduler_thread(void) {
          pthread_mutex_lock(&lock);
          total_time = process_list->getTotalTime(); // total waiting time for all processes in the list
          waiting_time = CPU->getData()->get_waiting_time();
+
+
+         pthread_mutex_lock(&print);
          cout << "Current Job waiting time is " << waiting_time << endl;
+         pthread_mutex_unlock(&print);
 
          time_quanta = (waiting_time / total_time) * MAX_TIME_QUANTA;
          time_remaining = CPU->getData()->get_time_remaining() - time_quanta;
@@ -97,21 +155,37 @@ void * DPRRA::CPU_scheduler_thread(void) {
 
          temp = CPU->getNext();
          if (time_remaining <= 0) {
-            t = process_list->getHead();
-            process_list->removeNode(t);
+            completion_time = chrono::system_clock::now();
+            CPU->getData()->set_completion_time(completion_time);
+            tempNode = process_list->getHead();
+            process_list->removeNode(tempNode);
             ++number_of_jobs_completed;
             CPU = temp;
+
+            pthread_mutex_lock(&print);
             cout << number_of_jobs_completed << " jobs have been completed" << endl;
+            pthread_mutex_unlock(&print);
          } else {
             CPU = CPU->getNext();
          }
          pthread_mutex_unlock(&lock);
       }
    }
+   pthread_mutex_lock(&print);
    cout << "ALL JOBS HAVE BEEN COMPLTED." << endl;
+   pthread_mutex_unlock(&print);
    return 0;
 }
 
+
+/*
+ * This is the primary function that spawns two threads : a) adder thread b) scheduler thread.
+ * As the name suggests, the adder thread adds jobs to the DCLL and the scheduler thread processes
+ * jobs in the DCLL.
+ *    Complexity: O(1)
+ *         Input: time required
+ *        Output: none
+ */
 void DPRRA::simulate_DPRRA(vector <Process> &process_array) {
    int adder_creation, scheduler_creation;
 
@@ -131,9 +205,8 @@ void DPRRA::simulate_DPRRA(vector <Process> &process_array) {
       exit(-1);
    }
 
-   cout << "threads have been joined" << endl;
    pthread_join(adder, 0);
    pthread_join(scheduler, 0);
-   cout << "threads have been joined" << endl;
    pthread_mutex_destroy(&lock);
+   pthread_mutex_destroy(&print);
 }

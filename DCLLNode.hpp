@@ -18,7 +18,6 @@ class DCLLNode {
    private:
       // variables
       DCLLNode *prev, *next;
-      int counter;
       Process *data;
 
    public:
