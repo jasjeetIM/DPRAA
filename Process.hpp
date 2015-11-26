@@ -19,7 +19,8 @@ class Process {
       // variables
       system_clock::time_point arrival_time;
       system_clock::time_point completion_time;
-      long int time_required, time_remaining, waiting_time, latest_tq;
+      long int time_required, waiting_time;
+      float time_remaining, latest_tq; 
 
    public:
       // function declarations
@@ -39,12 +40,12 @@ class Process {
       void set_completion_time(system_clock::time_point time);
 
       // latest time quantum
-      long int get_latest_tq();
-      void set_latest_tq(long int time);
+      float get_latest_tq();
+      void set_latest_tq(float time);
 
       // time remaining
-      long int get_time_remaining();
-      void set_time_remaining(long int time);
+      float get_time_remaining();
+      void set_time_remaining(float time);
 
       // waiting time
       long int get_waiting_time();

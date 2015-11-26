@@ -19,7 +19,7 @@
 #include "DCLLNode.hpp"
 #include "Process.hpp"
 
-#define MAX_TIME_QUANTA 5
+#define MAX_TIME_QUANTA 2.0
 
 using namespace std;
 
@@ -29,6 +29,7 @@ class DPRRA {
       DCLL * process_list;
       pthread_t adder, scheduler;
       vector<Process> * array_pointer;
+      pthread_cond_t schC; 
       pthread_mutex_t lock, print;
 
    public:

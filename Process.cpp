@@ -16,7 +16,7 @@
 Process::Process(long int t) {
    time_required = t;
    latest_tq = 0.0;
-   time_remaining = 0.0;
+   time_remaining = float(t);
 }
 
 /*
@@ -86,7 +86,7 @@ void Process::set_completion_time(system_clock::time_point t) {
  *         Input: none
  *        Output: lastest time quantum
  */
-long int Process::get_latest_tq() {
+float Process::get_latest_tq() {
    return latest_tq;
 }
 
@@ -97,7 +97,7 @@ long int Process::get_latest_tq() {
  *         Input: lastest time quantum
  *        Output: none
  */
-void Process::set_latest_tq(long int t) {
+void Process::set_latest_tq(float t) {
    latest_tq = t;
 }
 
@@ -107,7 +107,7 @@ void Process::set_latest_tq(long int t) {
  *         Input: none
  *        Output: time remaining
  */
-long int Process::get_time_remaining() {
+float Process::get_time_remaining() {
    return time_remaining;
 }
 
@@ -117,7 +117,7 @@ long int Process::get_time_remaining() {
  *         Input: time remaining
  *        Output: none
  */
-void Process::set_time_remaining(long int t) {
+void Process::set_time_remaining(float t) {
    time_remaining = t;
 }
 

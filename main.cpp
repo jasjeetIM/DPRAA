@@ -15,7 +15,7 @@
 
 using namespace std;
 
-#define MAX_CPU_TIME 100 // Maximum CPU time any process can require
+#define MAX_CPU_TIME 40 // Maximum CPU time any process can require
 #define NUMBER_OF_PROCESSES 10 // Number of processes to create as the input set
 
 void create_processes(vector<Process> & processes);
