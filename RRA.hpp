@@ -1,5 +1,5 @@
 // project/RRA.hpp
-// Dynamic Priority-based Round Robin Algorithm
+// Round Robin Algorithm
 // ----------------------------------------------
 // Authors:  Jasjeet Dhaliwal, Sui Fung Alex Wong
 // Date:     11/23/2015
@@ -29,7 +29,7 @@ class RRA {
       DCLL * process_list;
       pthread_t adder, scheduler;
       vector<Process> * array_pointer;
-      pthread_cond_t schC; 
+      pthread_cond_t schC;
       pthread_mutex_t lock, print;
 
    public:
@@ -38,9 +38,9 @@ class RRA {
       DCLL * getList(); // returns process_list
       static void * process_adder(void * process_array); //static function to start a thread for adding jobs to the DCLL
       static void * CPU_scheduler(void * process_array); // static function to start a thread for processing jobs in the DCLL
-      void * process_adder_thread(); // thread to add jobs in the DCLL 
+      void * process_adder_thread(); // thread to add jobs in the DCLL
       void * CPU_scheduler_thread(); // thread to process jobs in the DCLL
       void simulate_RRA(vector<Process> &process_array); // primary funciton that spawns both adder thread and the scheduler thread
 };
 
-#endif // DPRRA_HPP
+#endif // RRA_HPP

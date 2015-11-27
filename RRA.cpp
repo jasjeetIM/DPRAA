@@ -1,5 +1,5 @@
 // project/RRA.cpp
-//  Round Robin Algorithm
+// Round Robin Algorithm
 // ----------------------------------------------
 // Authors:  Jasjeet Dhaliwal, Sui Fung Alex Wong
 // Date:     11/23/2015
@@ -19,7 +19,7 @@ RRA::RRA() {
 }
 
 /*
- * This is the destructor for DPRRA which deletes the DCLL upon being called.
+ * This is the destructor for RRA which deletes the DCLL upon being called.
  *    Complexity: O(1)
  *         Input: none
  *        Output: none
@@ -82,10 +82,10 @@ void * RRA::process_adder_thread(void) {
 
    for (unsigned int i = 0; i < size; ++i) {
       curr = chrono::system_clock::now();
-      pthread_mutex_lock(&lock);	
+      pthread_mutex_lock(&lock);
       (*array_pointer)[i].set_arrival_time(curr);
-      process_list->insertNode(&(*array_pointer)[i]); 
-      pthread_cond_signal(&schC);  	
+      process_list->insertNode(&(*array_pointer)[i]);
+      pthread_cond_signal(&schC);
       pthread_mutex_unlock(&lock);
    }
 
@@ -98,7 +98,7 @@ void * RRA::process_adder_thread(void) {
 
 /*
  * This is a member function that processes each node in the DCLL using
- * the DPRRA algorithm. It calculates time_quanta for every node and then
+ * the RRA algorithm. It calculates time_quanta for every node and then
  * processes that node. Once the node has been processed (job has been
  * completed), it then removes that node from the DCLL and marks the completion
  * time in the job (Process).
@@ -111,7 +111,7 @@ void * RRA::CPU_scheduler_thread(void) {
    DCLLNode *CPU = 0;
    bool started = false;
    unsigned int completed_jobs, list_size, num_jobs;
-   float time_remaining; 
+   float time_remaining;
    chrono::system_clock::time_point completion_time;
 
    while (CPU == NULL) {
@@ -142,17 +142,18 @@ void * RRA::CPU_scheduler_thread(void) {
       pthread_mutex_lock(&lock);
       list_size = process_list->getSize();
       pthread_mutex_unlock(&lock);
-     
-       if (list_size > 0) { // processing of one job at a time
-         pthread_mutex_lock(&lock);
-         // total waiting time for all processes in the list
 
-	time_remaining = CPU->getData()->get_time_remaining() - TIME_QUANTA;
-        CPU->getData()->set_time_remaining(time_remaining); 
-        while (CPU->getNext() == NULL) pthread_cond_wait(&schC, &lock); 
-	 temp = CPU->getNext();
-         
-	if (time_remaining <= 0.00) {
+      if (list_size > 0) { // processing of one job at a time
+         pthread_mutex_lock(&lock);
+
+         time_remaining = CPU->getData()->get_time_remaining() - TIME_QUANTA;
+         CPU->getData()->set_time_remaining(time_remaining);
+         while (CPU->getNext() == NULL) {
+            pthread_cond_wait(&schC, &lock);
+         }
+         temp = CPU->getNext();
+
+         if (time_remaining <= 0.00) {
             completion_time = chrono::system_clock::now();
             CPU->getData()->set_completion_time(completion_time);
             tempNode = process_list->getHead();
@@ -164,12 +165,12 @@ void * RRA::CPU_scheduler_thread(void) {
             cout << completed_jobs << " jobs have been completed" << endl;
             pthread_mutex_unlock(&print);
          } else {
-
             CPU = CPU->getNext();
-	}
+         }
+         pthread_mutex_unlock(&lock);
       }
-    pthread_mutex_unlock(&lock); 
    }
+
    pthread_mutex_lock(&print);
    cout << "ALL JOBS HAVE BEEN COMPLTED." << endl;
    pthread_mutex_unlock(&print);
@@ -189,10 +190,12 @@ void * RRA::CPU_scheduler_thread(void) {
  */
 void RRA::simulate_RRA(vector<Process> &process_array) {
    int adder_creation, scheduler_creation;
+   
    pthread_mutex_init(&lock, 0);
    array_pointer = &process_array;
    pthread_mutex_init(&print, 0);
-   pthread_cond_init(&schC, 0); 
+   pthread_cond_init(&schC, 0);
+
    adder_creation = pthread_create(&adder, 0, &process_adder, this);
    if (adder_creation) {
       cout << "Error: unable to create thread," << adder_creation  << endl;
@@ -207,7 +210,7 @@ void RRA::simulate_RRA(vector<Process> &process_array) {
 
    pthread_join(adder, 0);
    pthread_join(scheduler, 0);
-   pthread_cond_destroy(&schC); 
+   pthread_cond_destroy(&schC);
    pthread_mutex_destroy(&lock);
    pthread_mutex_destroy(&print);
 }

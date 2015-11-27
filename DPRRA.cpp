@@ -82,10 +82,10 @@ void * DPRRA::process_adder_thread(void) {
 
    for (unsigned int i = 0; i < size; ++i) {
       curr = chrono::system_clock::now();
-      pthread_mutex_lock(&lock);	
+      pthread_mutex_lock(&lock);
       (*array_pointer)[i].set_arrival_time(curr);
-      process_list->insertNode(&(*array_pointer)[i]); 
-      pthread_cond_signal(&schC);  	
+      process_list->insertNode(&(*array_pointer)[i]);
+      pthread_cond_signal(&schC);
       pthread_mutex_unlock(&lock);
    }
 
@@ -112,7 +112,7 @@ void * DPRRA::CPU_scheduler_thread(void) {
    bool started = false;
    unsigned int completed_jobs, list_size, num_jobs;
    long int total_time, waiting_time;
-   float time_quanta, time_remaining; 
+   float time_quanta, time_remaining;
    chrono::system_clock::time_point completion_time;
 
    while (CPU == NULL) {
@@ -143,30 +143,29 @@ void * DPRRA::CPU_scheduler_thread(void) {
       pthread_mutex_lock(&lock);
       list_size = process_list->getSize();
       pthread_mutex_unlock(&lock);
-     
-       if (list_size > 0) { // processing of one job at a time
+
+      if (list_size > 0) { // processing of one job at a time
          pthread_mutex_lock(&lock);
          // total waiting time for all processes in the list
          total_time = process_list->getTotalTime();
          waiting_time = CPU->getData()->get_waiting_time();
+         time_quanta = (waiting_time /float( total_time)) * MAX_TIME_QUANTA;
+         if (time_quanta > MAX_TIME_QUANTA) {
+            time_quanta = MAX_TIME_QUANTA;
+         }
 
          pthread_mutex_lock(&print);
-	pthread_mutex_unlock(&print);
+         cout << "Current time quanta is : " << time_quanta << endl;
+         pthread_mutex_unlock(&print);
 
-         time_quanta = (waiting_time /float( total_time)) * MAX_TIME_QUANTA;
-	if (time_quanta > MAX_TIME_QUANTA) time_quanta = MAX_TIME_QUANTA; 
+         time_remaining = CPU->getData()->get_time_remaining() - time_quanta;
+         CPU->getData()->set_time_remaining(time_remaining);
+         while (CPU->getNext() == NULL) {
+            pthread_cond_wait(&schC, &lock);
+         }
 
-        pthread_mutex_lock(&print); 
-	cout << "Current time quanta is : " << time_quanta << endl;
-	 pthread_mutex_unlock(&print); 
-
-	time_remaining = CPU->getData()->get_time_remaining() - time_quanta;
-        CPU->getData()->set_time_remaining(time_remaining);  
-        while (CPU->getNext() == NULL) pthread_cond_wait(&schC, &lock); 
-	 temp = CPU->getNext();
-         
-
-	if (time_remaining <= 0.00) {
+         temp = CPU->getNext();
+         if (time_remaining <= 0.00) {
             completion_time = chrono::system_clock::now();
             CPU->getData()->set_completion_time(completion_time);
             tempNode = process_list->getHead();
@@ -178,12 +177,12 @@ void * DPRRA::CPU_scheduler_thread(void) {
             cout << completed_jobs << " jobs have been completed" << endl;
             pthread_mutex_unlock(&print);
          } else {
-
             CPU = CPU->getNext();
-	}
+         }
+         pthread_mutex_unlock(&lock);
       }
-    pthread_mutex_unlock(&lock); 
    }
+
    pthread_mutex_lock(&print);
    cout << "ALL JOBS HAVE BEEN COMPLTED." << endl;
    pthread_mutex_unlock(&print);
@@ -203,10 +202,12 @@ void * DPRRA::CPU_scheduler_thread(void) {
  */
 void DPRRA::simulate_DPRRA(vector<Process> &process_array) {
    int adder_creation, scheduler_creation;
+
    pthread_mutex_init(&lock, 0);
    array_pointer = &process_array;
    pthread_mutex_init(&print, 0);
-   pthread_cond_init(&schC, 0); 
+   pthread_cond_init(&schC, 0);
+   
    adder_creation = pthread_create(&adder, 0, &process_adder, this);
    if (adder_creation) {
       cout << "Error: unable to create thread," << adder_creation  << endl;
@@ -221,7 +222,7 @@ void DPRRA::simulate_DPRRA(vector<Process> &process_array) {
 
    pthread_join(adder, 0);
    pthread_join(scheduler, 0);
-   pthread_cond_destroy(&schC); 
+   pthread_cond_destroy(&schC);
    pthread_mutex_destroy(&lock);
    pthread_mutex_destroy(&print);
 }
