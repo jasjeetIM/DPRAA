@@ -15,8 +15,18 @@
  */
 Process::Process(long int t) {
    time_required = t;
+   reset_data();
+}
+
+/*
+ * This function resets the process.
+ *    Complexity: O(1)
+ *         Input: none
+ *        Output: none
+ */
+void Process::reset_data() {
    latest_tq = 0.0;
-   time_remaining = float(t);
+   time_remaining = float(time_required);
    cs_count = 0;
 }
 
@@ -66,7 +76,7 @@ void Process::set_arrival_time(system_clock::time_point t) {
  *         Input: none
  *        Output: completion time
  */
-system_clock::time_point Process::get_completetion_time() {
+system_clock::time_point Process::get_completion_time() {
    return completion_time;
 }
 
@@ -140,7 +150,7 @@ long int Process::get_waiting_time() {
  *         Input: none
  *        Output: context switch count
  */
-int Process::get_cs_count() {
+unsigned int Process::get_cs_count() {
    return cs_count;
 }
 

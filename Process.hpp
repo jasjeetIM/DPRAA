@@ -28,6 +28,8 @@ class Process {
       Process(long int time_required);
       ~Process() {}
 
+      void reset_data();
+
       // time required
       long int get_time_required();
       void set_time_required(long int t);
@@ -37,7 +39,7 @@ class Process {
       void set_arrival_time(system_clock::time_point t);
 
       // completion time
-      system_clock::time_point get_completetion_time();
+      system_clock::time_point get_completion_time();
       void set_completion_time(system_clock::time_point time);
 
       // latest time quantum
@@ -52,7 +54,7 @@ class Process {
       long int get_waiting_time();
 
       // context switch count
-      int get_cs_count();
+      unsigned int get_cs_count();
       void update_cs_count();
 };
 
