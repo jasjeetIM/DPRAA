@@ -164,6 +164,8 @@ void * DPRRA::CPU_scheduler_thread(void) {
             pthread_cond_wait(&schC, &lock);
          }
 
+         CPU->getData()->update_cs_count();
+
          temp = CPU->getNext();
          if (time_remaining <= 0.00) {
             completion_time = chrono::system_clock::now();
@@ -207,7 +209,7 @@ void DPRRA::simulate_DPRRA(vector<Process> &process_array) {
    array_pointer = &process_array;
    pthread_mutex_init(&print, 0);
    pthread_cond_init(&schC, 0);
-   
+
    adder_creation = pthread_create(&adder, 0, &process_adder, this);
    if (adder_creation) {
       cout << "Error: unable to create thread," << adder_creation  << endl;

@@ -151,8 +151,10 @@ void * RRA::CPU_scheduler_thread(void) {
          while (CPU->getNext() == NULL) {
             pthread_cond_wait(&schC, &lock);
          }
-         temp = CPU->getNext();
 
+         CPU->getData()->update_cs_count();
+
+         temp = CPU->getNext();
          if (time_remaining <= 0.00) {
             completion_time = chrono::system_clock::now();
             CPU->getData()->set_completion_time(completion_time);
@@ -190,7 +192,7 @@ void * RRA::CPU_scheduler_thread(void) {
  */
 void RRA::simulate_RRA(vector<Process> &process_array) {
    int adder_creation, scheduler_creation;
-   
+
    pthread_mutex_init(&lock, 0);
    array_pointer = &process_array;
    pthread_mutex_init(&print, 0);

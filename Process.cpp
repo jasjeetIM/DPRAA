@@ -17,6 +17,7 @@ Process::Process(long int t) {
    time_required = t;
    latest_tq = 0.0;
    time_remaining = float(t);
+   cs_count = 0;
 }
 
 /*
@@ -131,4 +132,24 @@ long int Process::get_waiting_time() {
    system_clock::time_point tp = system_clock::now();
    waiting_time = tp.time_since_epoch().count() - arrival_time.time_since_epoch().count();
    return waiting_time;
+}
+
+/*
+ * This function get the context switch count for this process.
+ *    Complexity: O(1)
+ *         Input: none
+ *        Output: context switch count
+ */
+int Process::get_cs_count() {
+   return cs_count;
+}
+
+/*
+ * This function increments the context switch count for this process.
+ *    Complexity: O(1)
+ *         Input: none
+ *        Output: none
+ */
+void Process::update_cs_count() {
+   ++cs_count;
 }

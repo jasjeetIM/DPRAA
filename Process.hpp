@@ -20,7 +20,8 @@ class Process {
       system_clock::time_point arrival_time;
       system_clock::time_point completion_time;
       long int time_required, waiting_time;
-      float time_remaining, latest_tq; 
+      float time_remaining, latest_tq;
+      unsigned int cs_count;
 
    public:
       // function declarations
@@ -49,6 +50,10 @@ class Process {
 
       // waiting time
       long int get_waiting_time();
+
+      // context switch count
+      int get_cs_count();
+      void update_cs_count();
 };
 
 #endif // PROCESS_HPP
