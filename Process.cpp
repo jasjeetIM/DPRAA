@@ -5,6 +5,7 @@
 // Date:     11/23/2015
 
 #include "Process.hpp"
+
 /*
  * This is the constructor that creates job based on total CPU time required to
  * finish the job.
@@ -14,7 +15,7 @@
  */
 Process::Process(int t, int id) {
    time_required = t;
-   identity = id; 
+   identity = id;
    reset_data();
 }
 
@@ -36,7 +37,7 @@ void Process::reset_data() {
  *         Input: none
  *        Output: time required
  */
- int Process::get_time_required() {
+int Process::get_time_required() {
    return time_required;
 }
 
@@ -164,6 +165,12 @@ void Process::update_cs_count() {
    ++cs_count;
 }
 
+/*
+ * This function gets the identity of this process.
+ *    Complexity: O(1)
+ *         Input: none
+ *        Output: identity
+ */
 int Process::get_id(){
-return identity;
+   return identity;
 }

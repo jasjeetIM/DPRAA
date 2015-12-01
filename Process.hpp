@@ -22,7 +22,8 @@ class Process {
       int time_required, waiting_time;
       float time_remaining, latest_tq;
       unsigned int cs_count;
-      int identity; 
+      int identity;
+
    public:
       // function declarations
       Process(int time_required, int id);
@@ -57,7 +58,8 @@ class Process {
       unsigned int get_cs_count();
       void update_cs_count();
 
-	int get_id(); 
+      // identity
+      int get_id();
 
 };
 

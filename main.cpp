@@ -54,9 +54,9 @@ int main (void) {
  *        Output: none
  */
 void create_processes(vector<Process> & processes) {
-    int time = 0; 
+    int time = 0;
     for (int i = 0; i < NUMBER_OF_PROCESSES; ++i) {
-      
+
     time =  (rand() % MAX_CPU_TIME);
       processes.push_back(Process(time, i));
    }
@@ -83,13 +83,13 @@ void reset_processes(vector<Process> processes) {
 void print_data(vector<Process> processes) {
    double avg_ft, l2_norm, avg_cs, avg_tp;
    unsigned int sum_cs;
-   long int sum_ft, sum_l2, ft; 
+   long int sum_ft, sum_l2, ft;
 
    sum_ft = sum_l2 = sum_cs = 0;
    for (int i = 0; i < NUMBER_OF_PROCESSES; ++i) {
-      ft = processes[i].get_completion_time().time_since_epoch().count() -  processes[i].get_arrival_time().time_since_epoch().count();
-      
-	cout << "                  flow time = " << ft << endl; // debug printing
+      ft = processes[i].get_completion_time().time_since_epoch().count()
+            - processes[i].get_arrival_time().time_since_epoch().count();
+      // cout << "               flow time = " << ft << endl; // debug printing
       sum_ft += ft;
       sum_l2 += pow(ft, 2.0);
       sum_cs += processes[i].get_cs_count();
@@ -97,12 +97,10 @@ void print_data(vector<Process> processes) {
 
    // average flow time (turnaround time)
    avg_ft = sum_ft / (double) NUMBER_OF_PROCESSES;
-   cout << "         total flow time = " << sum_ft << endl; // debug printing
    cout << "       average flow time = " << avg_ft << endl;
 
    // L2-norm flow time
    l2_norm = sqrt(sum_l2);
-   cout << "      total l2-norm time = " << sum_l2 << endl; // debug printing
    cout << "       l2-norm flow time = " << l2_norm << endl;
 
    // average context switches

@@ -107,7 +107,7 @@ void * DPRRA::process_adder_thread(void) {
  *        Output: pointer to the thread
  */
 void * DPRRA::CPU_scheduler_thread(void) {
-   DCLLNode *temp; 
+   DCLLNode *temp;
    DCLLNode *CPU = 0;
    bool started = false;
    unsigned int completed_jobs, list_size, num_jobs;
@@ -154,9 +154,9 @@ void * DPRRA::CPU_scheduler_thread(void) {
             time_quanta = MAX_TIME_QUANTA;
          }
 
-        // pthread_mutex_lock(&print);
-      //   cout << "Current time quanta is : " << time_quanta << endl;
-        // pthread_mutex_unlock(&print);
+         // pthread_mutex_lock(&print);
+         //   cout << "Current time quanta is : " << time_quanta << endl;
+         // pthread_mutex_unlock(&print);
 
          time_remaining = CPU->getData()->get_time_remaining() - time_quanta;
          CPU->getData()->set_time_remaining(time_remaining);
@@ -169,17 +169,16 @@ void * DPRRA::CPU_scheduler_thread(void) {
          temp = CPU->getNext();
          if (time_remaining <= 0.00) {
             completion_time = chrono::system_clock::now();
-            CPU->getData()->set_completion_time(completion_time);     
+            CPU->getData()->set_completion_time(completion_time);
             ++completed_jobs;
-      
+
             pthread_mutex_lock(&print);
-            cout << "JOB ID# " <<  CPU->getData()->get_id() << " has been completed." << endl;    
+            cout << "JOB ID# " << CPU->getData()->get_id() << " has been completed." << endl;
             pthread_mutex_unlock(&print);
 
-	    process_list->removeNode(CPU); 		    
-            CPU = temp; 
-         
-	 } else {
+            process_list->removeNode(CPU);
+            CPU = temp;
+         } else {
             CPU = CPU->getNext();
          }
          pthread_mutex_unlock(&lock);
