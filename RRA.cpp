@@ -107,7 +107,7 @@ void * RRA::process_adder_thread(void) {
  *        Output: pointer to the thread
  */
 void * RRA::CPU_scheduler_thread(void) {
-   DCLLNode *temp, *tempNode;
+   DCLLNode *temp; 
    DCLLNode *CPU = 0;
    bool started = false;
    unsigned int completed_jobs, list_size, num_jobs;
@@ -158,15 +158,16 @@ void * RRA::CPU_scheduler_thread(void) {
          if (time_remaining <= 0.00) {
             completion_time = chrono::system_clock::now();
             CPU->getData()->set_completion_time(completion_time);
-            tempNode = process_list->getHead();
-            process_list->removeNode(tempNode);
             ++completed_jobs;
-            CPU = temp;
 
             pthread_mutex_lock(&print);
-            cout << completed_jobs << " jobs have been completed" << endl;
+ 	    cout << "Job ID# " << CPU->getData()->get_id() << " has been completed. " << endl;
             pthread_mutex_unlock(&print);
-         } else {
+        
+	    process_list->removeNode(CPU); 
+	    CPU = temp; 	 
+
+	} else {
             CPU = CPU->getNext();
          }
          pthread_mutex_unlock(&lock);

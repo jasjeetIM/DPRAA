@@ -54,10 +54,11 @@ int main (void) {
  *        Output: none
  */
 void create_processes(vector<Process> & processes) {
-   for (int i = 0; i < NUMBER_OF_PROCESSES; ++i) {
-      typedef chrono::duration<long int, ratio<1, 1000000000>> nsec;
-      nsec p_time(rand() % MAX_CPU_TIME);
-      processes.push_back(Process(chrono::duration_cast<nsec>(p_time).count()));
+    int time = 0; 
+    for (int i = 0; i < NUMBER_OF_PROCESSES; ++i) {
+      
+    time =  (rand() % MAX_CPU_TIME);
+      processes.push_back(Process(time, i));
    }
 }
 
@@ -82,15 +83,15 @@ void reset_processes(vector<Process> processes) {
 void print_data(vector<Process> processes) {
    double avg_ft, l2_norm, avg_cs, avg_tp;
    unsigned int sum_cs;
-   chrono::nanoseconds ft;
-   long int sum_ft, sum_l2;
+   long int sum_ft, sum_l2, ft; 
 
    sum_ft = sum_l2 = sum_cs = 0;
    for (int i = 0; i < NUMBER_OF_PROCESSES; ++i) {
-      ft = duration_cast<chrono::nanoseconds>(processes[i].get_completion_time() - processes[i].get_arrival_time());
-      cout << "                  flow time = " << ft.count() << endl; // debug printing
-      sum_ft += ft.count();
-      sum_l2 += pow(ft.count(), 2.0);
+      ft = processes[i].get_completion_time().time_since_epoch().count() -  processes[i].get_arrival_time().time_since_epoch().count();
+      
+	cout << "                  flow time = " << ft << endl; // debug printing
+      sum_ft += ft;
+      sum_l2 += pow(ft, 2.0);
       sum_cs += processes[i].get_cs_count();
    }
 

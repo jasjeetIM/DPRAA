@@ -5,7 +5,6 @@
 // Date:     11/23/2015
 
 #include "Process.hpp"
-
 /*
  * This is the constructor that creates job based on total CPU time required to
  * finish the job.
@@ -13,8 +12,9 @@
  *         Input: time required
  *        Output: none
  */
-Process::Process(long int t) {
+Process::Process(int t, int id) {
    time_required = t;
+   identity = id; 
    reset_data();
 }
 
@@ -36,7 +36,7 @@ void Process::reset_data() {
  *         Input: none
  *        Output: time required
  */
-long int Process::get_time_required() {
+ int Process::get_time_required() {
    return time_required;
 }
 
@@ -46,7 +46,7 @@ long int Process::get_time_required() {
  *         Input: time required
  *        Output: none
  */
-void Process::set_time_required(long int t) {
+void Process::set_time_required(int t) {
    time_required = t;
 }
 
@@ -77,7 +77,7 @@ void Process::set_arrival_time(system_clock::time_point t) {
  *        Output: completion time
  */
 system_clock::time_point Process::get_completion_time() {
-   return completion_time;
+  return completion_time;
 }
 
 /*
@@ -138,7 +138,7 @@ void Process::set_time_remaining(float t) {
  *         Input: none
  *        Output: waiting time
  */
-long int Process::get_waiting_time() {
+int Process::get_waiting_time() {
    system_clock::time_point tp = system_clock::now();
    waiting_time = tp.time_since_epoch().count() - arrival_time.time_since_epoch().count();
    return waiting_time;
@@ -162,4 +162,8 @@ unsigned int Process::get_cs_count() {
  */
 void Process::update_cs_count() {
    ++cs_count;
+}
+
+int Process::get_id(){
+return identity;
 }

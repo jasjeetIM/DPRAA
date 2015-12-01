@@ -42,7 +42,7 @@ class DCLL {
       DCLLNode * getTail();
       int getSize();
       bool isEmpty();
-      long int getTotalTime();
+       int getTotalTime();
 };
 
 #endif // DCLL_HPP

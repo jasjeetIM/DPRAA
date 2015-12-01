@@ -109,9 +109,9 @@ bool DCLL::isEmpty() {
  *         Input: none
  *        Output: total waiting time
  */
-long int DCLL::getTotalTime() {
+ int DCLL::getTotalTime() {
    DCLLNode *temp = _head;
-   long int total_time = 0;
+   int total_time = 0;
 
    for (int i = 0; i < _size; ++i) {
       total_time += temp->getData()->get_waiting_time();

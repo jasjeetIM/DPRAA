@@ -19,20 +19,20 @@ class Process {
       // variables
       system_clock::time_point arrival_time;
       system_clock::time_point completion_time;
-      long int time_required, waiting_time;
+      int time_required, waiting_time;
       float time_remaining, latest_tq;
       unsigned int cs_count;
-
+      int identity; 
    public:
       // function declarations
-      Process(long int time_required);
+      Process(int time_required, int id);
       ~Process() {}
 
       void reset_data();
 
       // time required
-      long int get_time_required();
-      void set_time_required(long int t);
+      int get_time_required();
+      void set_time_required(int t);
 
       // arrival time
       system_clock::time_point get_arrival_time();
@@ -51,11 +51,14 @@ class Process {
       void set_time_remaining(float time);
 
       // waiting time
-      long int get_waiting_time();
+      int get_waiting_time();
 
       // context switch count
       unsigned int get_cs_count();
       void update_cs_count();
+
+	int get_id(); 
+
 };
 
 #endif // PROCESS_HPP
