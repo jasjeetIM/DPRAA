@@ -56,11 +56,11 @@ int main (void) {
  *        Output: none
  */
 void create_processes(vector<Process> & processes) {
-    int time = 0;
-    for (int i = 0; i < NUMBER_OF_PROCESSES; ++i) {
+   int t = 0;
 
-    time =  (rand() % MAX_CPU_TIME);
-      processes.push_back(Process(time, i));
+   for (int i = 0; i < NUMBER_OF_PROCESSES; ++i) {
+      t = (rand() % MAX_CPU_TIME);
+      processes.push_back(Process(t, i));
    }
 }
 
@@ -86,20 +86,19 @@ void print_data_DPRRA(vector<Process> processes) {
    double avg_ft, l2_norm, avg_cs, avg_tp;
    unsigned int sum_cs;
    long int sum_ft, sum_l2, ft;
-    ofstream Results("DPRRAResults.csv");
+   ofstream Results("DPRRAResults.csv");
 
-   if (Results.is_open())
-   {
-     Results << "Job ID" << ";" << "Flow Time" <<";" <<  "Context Switches" << endl;
-    }
+   if (Results.is_open()) {
+      Results << "Job ID" << ";" << "Flow Time" << ";" << "Context Switches" << endl;
+   } else {
+      cout << "Unable to open file" << endl;
+   }
 
-   else cout << "Unable to open file" << endl;
    sum_ft = sum_l2 = sum_cs = 0;
    for (int i = 0; i < NUMBER_OF_PROCESSES; ++i) {
-      ft = processes[i].get_completion_time().time_since_epoch().count() -  processes[i].get_arrival_time().time_since_epoch().count();
-      if (Results.is_open())
-      {
-      Results << processes[i].get_id() <<";" << ft << ";" << processes[i].get_cs_count() << endl; // debug printing
+      ft = processes[i].get_completion_time().time_since_epoch().count() - processes[i].get_arrival_time().time_since_epoch().count();
+      if (Results.is_open()) {
+         Results << processes[i].get_id() << ";" << ft << ";" << processes[i].get_cs_count() << endl; // debug printing
       }
 
       sum_ft += ft;
@@ -128,8 +127,6 @@ void print_data_DPRRA(vector<Process> processes) {
    cout << "      average throughput = " << avg_tp << endl;
 }
 
-
-
 /*
  * This function prints the data output for RRA.
  *    Complexity: O(n)
@@ -140,19 +137,19 @@ void print_data_RRA(vector<Process> processes) {
    double avg_ft, l2_norm, avg_cs, avg_tp;
    unsigned int sum_cs;
    long int sum_ft, sum_l2, ft;
-    ofstream Results("RRAResults.csv");
-   if (Results.is_open())
-   {
-     Results << "Job ID" << ";" << "Flow Time" <<";" <<  "Context Switches" << endl;
-    }
+   ofstream Results("RRAResults.csv");
 
-   else cout << "Unable to open file" << endl;
+   if (Results.is_open()) {
+      Results << "Job ID" << ";" << "Flow Time" <<";" <<  "Context Switches" << endl;
+   } else {
+      cout << "Unable to open file" << endl;
+   }
+
    sum_ft = sum_l2 = sum_cs = 0;
    for (int i = 0; i < NUMBER_OF_PROCESSES; ++i) {
-      ft = processes[i].get_completion_time().time_since_epoch().count() -  processes[i].get_arrival_time().time_since_epoch().count();
-      if (Results.is_open())
-      {
-      Results << processes[i].get_id() <<";" << ft << ";" << processes[i].get_cs_count() << endl; // debug printing
+      ft = processes[i].get_completion_time().time_since_epoch().count() - processes[i].get_arrival_time().time_since_epoch().count();
+      if (Results.is_open()) {
+         Results << processes[i].get_id() << ";" << ft << ";" << processes[i].get_cs_count() << endl; // debug printing
       }
 
       sum_ft += ft;

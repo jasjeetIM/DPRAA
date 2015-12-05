@@ -6,7 +6,6 @@
 
 #include "RRA.hpp"
 
-
 /*
  * This is the constructor for a RRA object which contains a DCLL.
  * finish the job.
@@ -30,7 +29,7 @@ RRA::~RRA() {
 
 /*
  *  This function returns a pointer to the DCLL.
- *         Complexity: O(1)
+ *    Complexity: O(1)
  *         Input: none
  *        Output: process list
  */
@@ -40,77 +39,57 @@ DCLL * RRA::getList() {
 
 
 /* This function uses merges sorted arrays.
- * 	Complexity: O(n)
- * 	Input: Two int arrays to be merged
- * 	Output: none
+ *    Complexity: O(n)
+ *         Input: Two int arrays to be merged
+ *        Output: none
  */
-void RRA:: merge(int arr[], int l, int m, int r)
-{
-    int i, j, k;
-    int n1 = m - l + 1;
-    int n2 =  r - m;
+void RRA::merge(int arr[], int l, int m, int r) {
+   int i, j, k;
+   int n1 = m - l + 1;
+   int n2 =  r - m;
+   int L[n1], R[n2];
 
-    int L[n1], R[n2];
+   /* Copy data to temp arrays L[] and R[] */
+   for(i = 0; i < n1; ++i) {
+      L[i] = arr[l + i];
+   }
+   for(j = 0; j < n2; ++j) {
+      R[j] = arr[m + 1 + j];
+   }
 
-    /* Copy data to temp arrays L[] and R[] */
-    for(i = 0; i < n1; i++)
-        L[i] = arr[l + i];
-    for(j = 0; j < n2; j++)
-        R[j] = arr[m + 1+ j];
+   /* Merge the temp arrays back into arr[l..r]*/
+   i = j = 0;
+   k = l;
+   while (i < n1 && j < n2) {
+      arr[k++] = L[i] <= R[j] ? L[i++] : R[j++];
+   }
 
-    /* Merge the temp arrays back into arr[l..r]*/
-    i = 0;
-    j = 0;
-    k = l;
-    while (i < n1 && j < n2)
-    {
-        if (L[i] <= R[j])
-        {
-            arr[k] = L[i];
-            i++;
-        }
-        else
-        {
-            arr[k] = R[j];
-            j++;
-        }
-        k++;
-    }
+   /* Copy the remaining elements of L[], if there are any */
+   while (i < n1) {
+      arr[k++] = L[i++];
+   }
 
-    /* Copy the remaining elements of L[], if there are any */
-    while (i < n1)
-    {
-        arr[k] = L[i];
-        i++;
-        k++;
-    }
-
-    /* Copy the remaining elements of R[], if there are any */
-    while (j < n2)
-    {
-        arr[k] = R[j];
-        j++;
-        k++;
-    }
+   /* Copy the remaining elements of R[], if there are any */
+   while (j < n2) {
+      arr[k++] = R[j++];
+   }
 }
 
-/*   This function sorts an array of times using mergesort.
- *   	Complexity: O(nlogn)
- *   	Input: Array to be sorted
- *   	Output: None
+/* This function sorts an array of times using mergesort.
+ *    Complexity: O(n log n)
+ *         Input: Array to be sorted
+ *        Output: None
  */
-void RRA::mergeSort(int arr[], int l, int r)
-{
-    if (l < r)
-    {
-        int m = l+(r-l)/2;
-        mergeSort(arr, l, m);
-        mergeSort(arr, m+1, r);
-        merge(arr, l, m, r);
-    }
+void RRA::mergeSort(int arr[], int l, int r) {
+   int m;
+
+   if (l < r) {
+      m = l + (r - l) / 2;
+      mergeSort(arr, l, m);
+      mergeSort(arr, m + 1, r);
+      merge(arr, l, m, r);
+   }
 }
-
-
 
 /*
  * This static function is executed in a new thread. It then calls the
@@ -137,7 +116,6 @@ void * RRA::CPU_scheduler(void * param) {
    non_static_object->CPU_scheduler_thread();
    pthread_exit(0);
 }
-
 
 /*
  * This is a member function that adds new DCLLNodes to the DCLL. Each node
@@ -233,15 +211,10 @@ void * RRA::CPU_scheduler_thread(void) {
             completion_time = chrono::system_clock::now();
             CPU->getData()->set_completion_time(completion_time);
             ++completed_jobs;
-          
-          //  pthread_mutex_lock(&print);
-  	   // cout << "Job ID# " << CPU->getData()->get_id() << " has been completed. " << endl;
-           // pthread_mutex_unlock(&print);
 
-	    process_list->removeNode(CPU);
-	    CPU = temp;
-
-	} else {
+            process_list->removeNode(CPU);
+            CPU = temp;
+         } else {
             CPU = CPU->getNext();
          }
          pthread_mutex_unlock(&lock);
@@ -253,7 +226,6 @@ void * RRA::CPU_scheduler_thread(void) {
    pthread_mutex_unlock(&print);
    return 0;
 }
-
 
 /*
  * This is the primary function that spawns two threads:
@@ -269,14 +241,13 @@ void RRA::simulate_RRA(vector<Process> &process_array) {
    int adder_creation, scheduler_creation;
 
    mrgArr = new int[process_array.size()];
-
    for (unsigned int i = 0; i< process_array.size(); ++i) {
-	mrgArr[i] = process_array[i].get_time_required();
+      mrgArr[i] = process_array[i].get_time_required();
    }
-  
+
    mergeSort(mrgArr, 0, process_array.size());
 
-   TQ = mrgArr[(process_array.size()-1)/2];
+   TQ = mrgArr[(process_array.size() - 1) / 2];
    cout << "TQ " << TQ << endl;
    pthread_mutex_init(&lock, 0);
    array_pointer = &process_array;

@@ -6,7 +6,6 @@
 
 #include "DPRRA.hpp"
 
-
 /*
  * This is the constructor for a DPRRA object which contains a DCLL.
  * finish the job.
@@ -39,58 +38,40 @@ DCLL * DPRRA::getList() {
 }
 
 /* This function uses merges sorted arrays.
- * 	Complexity: O(n)
- * 	Input: Two int arrays to be merged
- * 	Output: none
+ *    Complexity: O(n)
+ *         Input: Two int arrays to be merged
+ *        Output: none
  */
-void DPRRA:: merge(int arr[], int l, int m, int r)
-{
-    int i, j, k;
-    int n1 = m - l + 1;
-    int n2 =  r - m;
+void DPRRA:: merge(int arr[], int l, int m, int r) {
+   int i, j, k;
+   int n1 = m - l + 1;
+   int n2 =  r - m;
+   int L[n1], R[n2];
 
-    int L[n1], R[n2];
+   /* Copy data to temp arrays L[] and R[] */
+   for(i = 0; i < n1; ++i) {
+      L[i] = arr[l + i];
+   }
+   for(j = 0; j < n2; ++j) {
+      R[j] = arr[m + 1+ j];
+   }
 
-    /* Copy data to temp arrays L[] and R[] */
-    for(i = 0; i < n1; i++)
-        L[i] = arr[l + i];
-    for(j = 0; j < n2; j++)
-        R[j] = arr[m + 1+ j];
+   /* Merge the temp arrays back into arr[l..r]*/
+   i = j = 0;
+   k = l;
+   while (i < n1 && j < n2) {
+      arr[k++] = L[i] <= R[j] ? L[i++] : R[j++];
+   }
 
-    /* Merge the temp arrays back into arr[l..r]*/
-    i = 0;
-    j = 0;
-    k = l;
-    while (i < n1 && j < n2)
-    {
-        if (L[i] <= R[j])
-        {
-            arr[k] = L[i];
-            i++;
-        }
-        else
-        {
-            arr[k] = R[j];
-            j++;
-        }
-        k++;
-    }
+   /* Copy the remaining elements of L[], if there are any */
+   while (i < n1) {
+      arr[k++] = L[i++];
+   }
 
-    /* Copy the remaining elements of L[], if there are any */
-    while (i < n1)
-    {
-        arr[k] = L[i];
-        i++;
-        k++;
-    }
-
-    /* Copy the remaining elements of R[], if there are any */
-    while (j < n2)
-    {
-        arr[k] = R[j];
-        j++;
-        k++;
-    }
+   /* Copy the remaining elements of R[], if there are any */
+   while (j < n2) {
+      arr[k++] = R[j++];
+   }
 }
 
 /*   This function sorts an array of times using mergesort.
@@ -98,17 +79,16 @@ void DPRRA:: merge(int arr[], int l, int m, int r)
  *   	Input: Array to be sorted
  *   	Output: None
  */
-void DPRRA::mergeSort(int arr[], int l, int r)
-{
-    if (l < r)
-    {
-        int m = l+(r-l)/2;
-        mergeSort(arr, l, m);
-        mergeSort(arr, m+1, r);
-        merge(arr, l, m, r);
-    }
-}
+void DPRRA::mergeSort(int arr[], int l, int r) {
+   int m;
 
+   if (l < r) {
+      m = l + (r - l) / 2;
+      mergeSort(arr, l, m);
+      mergeSort(arr, m + 1, r);
+      merge(arr, l, m, r);
+   }
+}
 
 /*
  * This static function is executed in a new thread. It then calls the
@@ -168,7 +148,6 @@ void * DPRRA::process_adder_thread(void) {
    return 0;
 }
 
-
 /*
  * This is a member function that processes each node in the DCLL using
  * the DPRRA algorithm. It calculates time_quanta for every node and then
@@ -219,26 +198,22 @@ void * DPRRA::CPU_scheduler_thread(void) {
 
       if (list_size > 0) { // processing of one job at a time
          pthread_mutex_lock(&lock);
-         // Recalculating time_quanta every time the CPU is equal to the head.
-         if (CPU == process_list->getHead())
-         {
-           total_time = process_list->getTotalTime();
 
-           for (int i = 0; i< process_list->getSize(); ++i)
-           {
-             waiting_time = CPU->getData()->get_waiting_time();
-             time_quanta = (Min_tq + (waiting_time/total_time)*(Max_tq - Min_tq));
-             if (time_quanta > Max_tq) {
-               time_quanta = Max_tq;
+         // Recalculating time_quanta every time the CPU is equal to the head.
+         if (CPU == process_list->getHead()) {
+            total_time = process_list->getTotalTime();
+
+            for (int i = 0; i < process_list->getSize(); ++i) {
+               waiting_time = CPU->getData()->get_waiting_time();
+               time_quanta = Min_tq + (waiting_time / total_time) * (Max_tq - Min_tq);
+               if (time_quanta > Max_tq) {
+                  time_quanta = Max_tq;
                }
                CPU->getData()->set_latest_tq(time_quanta);
                CPU = CPU->getNext();
            }
-
          }
-
          CPU = process_list->getHead();
-
 
          time_remaining = CPU->getData()->get_time_remaining() - CPU->getData()->get_latest_tq();
          CPU->getData()->set_time_remaining(time_remaining);
@@ -254,11 +229,9 @@ void * DPRRA::CPU_scheduler_thread(void) {
             CPU->getData()->set_completion_time(completion_time);
             ++completed_jobs;
 
-
-	    process_list->removeNode(CPU);
+            process_list->removeNode(CPU);
             CPU = temp;
-
-	 } else {
+         } else {
             CPU = CPU->getNext();
          }
          pthread_mutex_unlock(&lock);
@@ -284,19 +257,18 @@ void * DPRRA::CPU_scheduler_thread(void) {
  */
 void DPRRA::simulate_DPRRA(vector<Process> &process_array) {
    int adder_creation, scheduler_creation;
-   mrgArr = new int[process_array.size()];
    int q1, q2, q3;
 
-  for (unsigned int i = 0; i< process_array.size(); ++i) {
-	mrgArr[i] = process_array[i].get_time_required();
- }
+   mrgArr = new int[process_array.size()];
+   for (unsigned int i = 0; i< process_array.size(); ++i) {
+      mrgArr[i] = process_array[i].get_time_required();
+   }
 
    mergeSort(mrgArr, 0, process_array.size());
 
-   q2 = (process_array.size() - 1)/2;
-   q1 = q2/2;
-   q3 = q2 + q2/2;
-
+   q2 = (process_array.size() - 1) / 2;
+   q1 = q2 / 2;
+   q3 = q2 + q2 / 2;
 
    Min_tq  = mrgArr[q1];
    Max_tq  = mrgArr[q3];

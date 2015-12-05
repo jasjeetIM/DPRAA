@@ -19,7 +19,6 @@
 #include "DCLLNode.hpp"
 #include "Process.hpp"
 
-
 using namespace std;
 
 class RRA {
@@ -44,7 +43,6 @@ class RRA {
       void simulate_RRA(vector<Process> &process_array); // primary funciton that spawns both adder thread and the scheduler thread
       void merge(int arr[], int l, int m, int r);
       void mergeSort(int arr[], int l, int r);
-
 };
 
 #endif // RRA_HPP

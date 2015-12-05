@@ -164,6 +164,12 @@ void Process::update_cs_count() {
    ++cs_count;
 }
 
-int Process::get_id(){
-return identity;
+/*
+ * This function get the id for this process.
+ *    Complexity: O(1)
+ *         Input: none
+ *        Output: id
+ */
+int Process::get_id() {
+   return identity;
 }
