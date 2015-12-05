@@ -260,7 +260,7 @@ void DPRRA::simulate_DPRRA(vector<Process> &process_array) {
    int q1, q2, q3;
 
    mrgArr = new int[process_array.size()];
-   for (unsigned int i = 0; i< process_array.size(); ++i) {
+   for (unsigned int i = 0; i < process_array.size(); ++i) {
       mrgArr[i] = process_array[i].get_time_required();
    }
 
