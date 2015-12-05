@@ -156,7 +156,6 @@ void * DPRRA::process_adder_thread(void) {
       curr = chrono::system_clock::now();
       pthread_mutex_lock(&lock);
       (*array_pointer)[i].set_arrival_time(curr);
-      (*array_pointer)[i].set_latest_tq(float(Min_tq));
       process_list->insertNode(&(*array_pointer)[i]);
       pthread_cond_signal(&schC);
       pthread_mutex_unlock(&lock);
@@ -219,41 +218,35 @@ void * DPRRA::CPU_scheduler_thread(void) {
 
       if (list_size > 0) { // processing of one job at a time
          pthread_mutex_lock(&lock);
-         // Recalculating time_quanta every time the CPU is equal to the head.
-         if (CPU == process_list->getHead())
-         {
-           total_time = process_list->getTotalTime();
-
-           for (int i = 0; i< process_list->getSize(); ++i)
-           {
-             waiting_time = CPU->getData()->get_waiting_time();
-             time_quanta = (Min_tq + (waiting_time/total_time)*(Max_tq - Min_tq));
-             if (time_quanta > Max_tq) {
-               time_quanta = Max_tq;
-               }
-               CPU->getData()->set_latest_tq(time_quanta);
-               CPU = CPU->getNext();
-           }
-
+         // total waiting time for all processes in the list
+         total_time = process_list->getTotalTime();
+         waiting_time = CPU->getData()->get_waiting_time();
+         time_quanta = (Min_tq + (waiting_time/total_time)*(Max_tq - Min_tq));
+         if (time_quanta > Max_tq) {
+            time_quanta = Max_tq;
          }
 
-         CPU = process_list->getHead();
+        // pthread_mutex_lock(&print);
+      //   cout << "Current time quanta is : " << time_quanta << endl;
+        // pthread_mutex_unlock(&print);
 
-
-         time_remaining = CPU->getData()->get_time_remaining() - CPU->getData()->get_latest_tq();
+         time_remaining = CPU->getData()->get_time_remaining() - time_quanta;
          CPU->getData()->set_time_remaining(time_remaining);
          while (CPU->getNext() == NULL) {
             pthread_cond_wait(&schC, &lock);
          }
 
          CPU->getData()->update_cs_count();
-         temp = CPU->getNext();
 
+         temp = CPU->getNext();
          if (time_remaining <= 0.00) {
             completion_time = chrono::system_clock::now();
             CPU->getData()->set_completion_time(completion_time);
             ++completed_jobs;
 
+           // pthread_mutex_lock(&print);
+          //  cout << "JOB ID# " <<  CPU->getData()->get_id() << " has been completed." << endl;
+           // pthread_mutex_unlock(&print);
 
 	    process_list->removeNode(CPU);
             CPU = temp;

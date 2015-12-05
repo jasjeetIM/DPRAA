@@ -14,7 +14,7 @@
  */
 Process::Process(int t, int id) {
    time_required = t;
-   identity = id; 
+   identity = id;
    reset_data();
 }
 
