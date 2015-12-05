@@ -18,32 +18,41 @@
 using namespace std;
 
 #define MAX_CPU_TIME 40 // Maximum CPU time any process can require
-#define NUMBER_OF_PROCESSES 50000 // Number of processes to create as the input set
+#define NUMBER_OF_PROCESSES 25 // Number of processes to create as the input set
 
-void create_processes(vector<Process> & processes);
-void reset_processes(vector<Process> processes);
-void print_data_RRA(vector<Process> processes);
-void print_data_DPRRA(vector<Process> processes);
+void create_processes(vector<Process> & processes, int maxTime, int numProcess);
+void reset_processes(vector<Process> processes, int numProcess);
+void print_data_RRA(vector<Process> processes, int numProcess);
+void print_data_DPRRA(vector<Process> processes, int numProcess);
 
-int main (void) {
+int main (int argc, char *argv[]) {
    DPRRA Dynamic_RRA;
    RRA trad_RRA;
    vector<Process> processes;
+   int maxTime, numProcess;
 
-   srand(time(NULL)); // different seed value for RNG
-   create_processes(processes); // populate the vector with processes
+   if (argc == 3) {
+      maxTime = atoi(argv[1]);
+      numProcess = atoi(argv[2]);
+   } else {
+      maxTime = MAX_CPU_TIME;
+      numProcess = NUMBER_OF_PROCESSES;
+   }
+
+   srand(time(NULL));
+   create_processes(processes, maxTime, numProcess);
 
    cout << "Starting Dynamic Priority-based Round Robin" << endl;
    Dynamic_RRA.simulate_DPRRA(processes);
    cout << "Dynamic Priority-based Round Robin has been completed" << endl;
-   print_data_DPRRA(processes);
+   print_data_DPRRA(processes, numProcess);
 
-   reset_processes(processes);
+   reset_processes(processes, numProcess);
 
    cout << endl << endl << "Starting Round Robin" << endl;
    trad_RRA.simulate_RRA(processes);
    cout << "Round Robin has been completed" << endl;
-   print_data_RRA(processes);
+   print_data_RRA(processes, numProcess);
 
    return 0;
 }
@@ -55,11 +64,11 @@ int main (void) {
  *         Input: vector of processes
  *        Output: none
  */
-void create_processes(vector<Process> & processes) {
+void create_processes(vector<Process> & processes, int maxTime, int numProcess) {
    int t = 0;
 
-   for (int i = 0; i < NUMBER_OF_PROCESSES; ++i) {
-      t = (rand() % MAX_CPU_TIME);
+   for (int i = 0; i < numProcess; ++i) {
+      t = (rand() % maxTime);
       processes.push_back(Process(t, i));
    }
 }
@@ -70,8 +79,8 @@ void create_processes(vector<Process> & processes) {
  *         Input: vector of processes
  *        Output: none
  */
-void reset_processes(vector<Process> processes) {
-   for (int i = 0; i < NUMBER_OF_PROCESSES; ++i) {
+void reset_processes(vector<Process> processes, int numProcess) {
+   for (int i = 0; i < numProcess; ++i) {
       processes[i].reset_data();
    }
 }
@@ -82,7 +91,7 @@ void reset_processes(vector<Process> processes) {
  *         Input: vector of processes
  *        Output: none
  */
-void print_data_DPRRA(vector<Process> processes) {
+void print_data_DPRRA(vector<Process> processes, int numProcess) {
    double avg_ft, l2_norm, avg_cs, avg_tp;
    unsigned int sum_cs;
    long int sum_ft, sum_l2, ft;
@@ -95,7 +104,7 @@ void print_data_DPRRA(vector<Process> processes) {
    }
 
    sum_ft = sum_l2 = sum_cs = 0;
-   for (int i = 0; i < NUMBER_OF_PROCESSES; ++i) {
+   for (int i = 0; i < numProcess; ++i) {
       ft = processes[i].get_completion_time().time_since_epoch().count() - processes[i].get_arrival_time().time_since_epoch().count();
       if (Results.is_open()) {
          Results << processes[i].get_id() << ";" << ft << ";" << processes[i].get_cs_count() << endl; // debug printing
@@ -109,7 +118,7 @@ void print_data_DPRRA(vector<Process> processes) {
    Results.close();
 
    // average flow time (turnaround time)
-   avg_ft = sum_ft / (double) NUMBER_OF_PROCESSES;
+   avg_ft = sum_ft / (double) numProcess;
    cout << "         total flow time = " << sum_ft << endl; // debug printing
    cout << "       average flow time = " << avg_ft << endl;
 
@@ -119,11 +128,11 @@ void print_data_DPRRA(vector<Process> processes) {
    cout << "       l2-norm flow time = " << l2_norm << endl;
 
    // average context switches
-   avg_cs = sum_cs / (double) NUMBER_OF_PROCESSES;
+   avg_cs = sum_cs / (double) numProcess;
    cout << "average context switches = " << avg_cs << endl;
 
    // average throughput
-   avg_tp = (double) NUMBER_OF_PROCESSES / sum_ft;
+   avg_tp = (double) numProcess / sum_ft;
    cout << "      average throughput = " << avg_tp << endl;
 }
 
@@ -133,7 +142,7 @@ void print_data_DPRRA(vector<Process> processes) {
  *         Input: vector of processes
  *        Output: none
  */
-void print_data_RRA(vector<Process> processes) {
+void print_data_RRA(vector<Process> processes, int numProcess) {
    double avg_ft, l2_norm, avg_cs, avg_tp;
    unsigned int sum_cs;
    long int sum_ft, sum_l2, ft;
@@ -146,7 +155,7 @@ void print_data_RRA(vector<Process> processes) {
    }
 
    sum_ft = sum_l2 = sum_cs = 0;
-   for (int i = 0; i < NUMBER_OF_PROCESSES; ++i) {
+   for (int i = 0; i < numProcess; ++i) {
       ft = processes[i].get_completion_time().time_since_epoch().count() - processes[i].get_arrival_time().time_since_epoch().count();
       if (Results.is_open()) {
          Results << processes[i].get_id() << ";" << ft << ";" << processes[i].get_cs_count() << endl; // debug printing
@@ -160,7 +169,7 @@ void print_data_RRA(vector<Process> processes) {
    Results.close();
 
    // average flow time (turnaround time)
-   avg_ft = sum_ft / (double) NUMBER_OF_PROCESSES;
+   avg_ft = sum_ft / (double) numProcess;
    cout << "         total flow time = " << sum_ft << endl; // debug printing
    cout << "       average flow time = " << avg_ft << endl;
 
@@ -170,10 +179,10 @@ void print_data_RRA(vector<Process> processes) {
    cout << "       l2-norm flow time = " << l2_norm << endl;
 
    // average context switches
-   avg_cs = sum_cs / (double) NUMBER_OF_PROCESSES;
+   avg_cs = sum_cs / (double) numProcess;
    cout << "average context switches = " << avg_cs << endl;
 
    // average throughput
-   avg_tp = (double) NUMBER_OF_PROCESSES / sum_ft;
+   avg_tp = (double) numProcess / sum_ft;
    cout << "      average throughput = " << avg_tp << endl;
 }
