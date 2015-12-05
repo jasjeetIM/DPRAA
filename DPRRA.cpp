@@ -268,12 +268,11 @@ void DPRRA::simulate_DPRRA(vector<Process> &process_array) {
 
    q2 = (process_array.size() - 1) / 2;
    q1 = q2 / 2;
-   q3 = q2 + q2 / 2;
-
+   q3 = q1 + q2;
    Min_tq  = mrgArr[q1];
    Max_tq  = mrgArr[q3];
-
    cout << "Min " << Min_tq << ", Max " << Max_tq << endl;
+
    pthread_mutex_init(&lock, 0);
    array_pointer = &process_array;
    pthread_mutex_init(&print, 0);

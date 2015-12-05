@@ -65,11 +65,8 @@ int main (int argc, char *argv[]) {
  *        Output: none
  */
 void create_processes(vector<Process> & processes, int maxTime, int numProcess) {
-   int t = 0;
-
    for (int i = 0; i < numProcess; ++i) {
-      t = (rand() % maxTime);
-      processes.push_back(Process(t, i));
+      processes.push_back(Process(rand() % maxTime, i));
    }
 }
 
@@ -98,16 +95,19 @@ void print_data(vector<Process> processes, int numProcess, string filename) {
    ofstream Results(filename);
 
    if (Results.is_open()) {
-      Results << "Job ID" << ";" << "Flow Time" << ";" << "Context Switches" << endl;
+      Results << "Job ID;Flow Time;Context Switches\n";
    } else {
       cout << "Unable to open file" << endl;
    }
 
    sum_ft = sum_l2 = sum_cs = 0;
    for (int i = 0; i < numProcess; ++i) {
-      ft = processes[i].get_completion_time().time_since_epoch().count() - processes[i].get_arrival_time().time_since_epoch().count();
+      ft = processes[i].get_completion_time().time_since_epoch().count()
+            - processes[i].get_arrival_time().time_since_epoch().count();
+      
       if (Results.is_open()) {
-         Results << processes[i].get_id() << ";" << ft << ";" << processes[i].get_cs_count() << endl; // debug printing
+         Results << processes[i].get_id() << ";" << ft << ";"
+               << processes[i].get_cs_count() << endl;
       }
 
       sum_ft += ft;
@@ -119,12 +119,12 @@ void print_data(vector<Process> processes, int numProcess, string filename) {
 
    // average flow time (turnaround time)
    avg_ft = sum_ft / (double) numProcess;
-   cout << "         total flow time = " << sum_ft << endl; // debug printing
+   cout << "         total flow time = " << sum_ft << endl;
    cout << "       average flow time = " << avg_ft << endl;
 
    // L2-norm flow time
    l2_norm = sqrt(sum_l2);
-   cout << "      total l2-norm time = " << sum_l2 << endl; // debug printing
+   cout << "      total l2-norm time = " << sum_l2 << endl;
    cout << "       l2-norm flow time = " << l2_norm << endl;
 
    // average context switches
