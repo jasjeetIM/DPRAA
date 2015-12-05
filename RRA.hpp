@@ -19,7 +19,6 @@
 #include "DCLLNode.hpp"
 #include "Process.hpp"
 
-#define TIME_QUANTA 0.5
 
 using namespace std;
 
@@ -31,6 +30,8 @@ class RRA {
       vector<Process> * array_pointer;
       pthread_cond_t schC;
       pthread_mutex_t lock, print;
+      int * mrgArr;
+      int TQ;
 
    public:
       RRA(); // constructor
@@ -41,6 +42,9 @@ class RRA {
       void * process_adder_thread(); // thread to add jobs in the DCLL
       void * CPU_scheduler_thread(); // thread to process jobs in the DCLL
       void simulate_RRA(vector<Process> &process_array); // primary funciton that spawns both adder thread and the scheduler thread
+      void merge(int arr[], int l, int m, int r);
+      void mergeSort(int arr[], int l, int r);
+
 };
 
 #endif // RRA_HPP

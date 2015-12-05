@@ -38,6 +38,78 @@ DCLL * DPRRA::getList() {
    return process_list;
 }
 
+/* This function uses merges sorted arrays.
+ * 	Complexity: O(n)
+ * 	Input: Two int arrays to be merged
+ * 	Output: none
+ */
+void DPRRA:: merge(int arr[], int l, int m, int r)
+{
+    int i, j, k;
+    int n1 = m - l + 1;
+    int n2 =  r - m;
+
+    int L[n1], R[n2];
+
+    /* Copy data to temp arrays L[] and R[] */
+    for(i = 0; i < n1; i++)
+        L[i] = arr[l + i];
+    for(j = 0; j < n2; j++)
+        R[j] = arr[m + 1+ j];
+
+    /* Merge the temp arrays back into arr[l..r]*/
+    i = 0;
+    j = 0;
+    k = l;
+    while (i < n1 && j < n2)
+    {
+        if (L[i] <= R[j])
+        {
+            arr[k] = L[i];
+            i++;
+        }
+        else
+        {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    /* Copy the remaining elements of L[], if there are any */
+    while (i < n1)
+    {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    /* Copy the remaining elements of R[], if there are any */
+    while (j < n2)
+    {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+/*   This function sorts an array of times using mergesort.
+ *   	Complexity: O(nlogn)
+ *   	Input: Array to be sorted
+ *   	Output: None
+ */
+void DPRRA::mergeSort(int arr[], int l, int r)
+{
+    if (l < r)
+    {
+        int m = l+(r-l)/2;
+        mergeSort(arr, l, m);
+        mergeSort(arr, m+1, r);
+        merge(arr, l, m, r);
+    }
+}
+
+
 /*
  * This static function is executed in a new thread. It then calls the
  * process_adder_thread() function which enables multithreading.
@@ -107,7 +179,7 @@ void * DPRRA::process_adder_thread(void) {
  *        Output: pointer to the thread
  */
 void * DPRRA::CPU_scheduler_thread(void) {
-   DCLLNode *temp; 
+   DCLLNode *temp;
    DCLLNode *CPU = 0;
    bool started = false;
    unsigned int completed_jobs, list_size, num_jobs;
@@ -149,9 +221,9 @@ void * DPRRA::CPU_scheduler_thread(void) {
          // total waiting time for all processes in the list
          total_time = process_list->getTotalTime();
          waiting_time = CPU->getData()->get_waiting_time();
-         time_quanta = (waiting_time /float( total_time)) * MAX_TIME_QUANTA;
-         if (time_quanta > MAX_TIME_QUANTA) {
-            time_quanta = MAX_TIME_QUANTA;
+         time_quanta = (Min_tq + (waiting_time/total_time)*(Max_tq - Min_tq));
+         if (time_quanta > Max_tq) {
+            time_quanta = Max_tq;
          }
 
         // pthread_mutex_lock(&print);
@@ -169,16 +241,16 @@ void * DPRRA::CPU_scheduler_thread(void) {
          temp = CPU->getNext();
          if (time_remaining <= 0.00) {
             completion_time = chrono::system_clock::now();
-            CPU->getData()->set_completion_time(completion_time);     
+            CPU->getData()->set_completion_time(completion_time);
             ++completed_jobs;
-      
-            pthread_mutex_lock(&print);
-            cout << "JOB ID# " <<  CPU->getData()->get_id() << " has been completed." << endl;    
-            pthread_mutex_unlock(&print);
 
-	    process_list->removeNode(CPU); 		    
-            CPU = temp; 
-         
+           // pthread_mutex_lock(&print);
+          //  cout << "JOB ID# " <<  CPU->getData()->get_id() << " has been completed." << endl;
+           // pthread_mutex_unlock(&print);
+
+	    process_list->removeNode(CPU);
+            CPU = temp;
+
 	 } else {
             CPU = CPU->getNext();
          }
@@ -205,7 +277,24 @@ void * DPRRA::CPU_scheduler_thread(void) {
  */
 void DPRRA::simulate_DPRRA(vector<Process> &process_array) {
    int adder_creation, scheduler_creation;
+   mrgArr = new int[process_array.size()];
+   int q1, q2, q3; 
 
+  for (unsigned int i = 0; i< process_array.size(); ++i) {
+	mrgArr[i] = process_array[i].get_time_required();
+ }
+
+   mergeSort(mrgArr, 0, process_array.size());
+
+   q2 = (process_array.size() - 1)/2;
+   q1 = q2/2; 
+   q3 = q2 + q2/2;  
+
+
+   Min_tq  = mrgArr[q1];
+   Max_tq  = mrgArr[q3];
+   
+   cout << "Min " << Min_tq << ", Max " << Max_tq << endl;
    pthread_mutex_init(&lock, 0);
    array_pointer = &process_array;
    pthread_mutex_init(&print, 0);
@@ -228,4 +317,5 @@ void DPRRA::simulate_DPRRA(vector<Process> &process_array) {
    pthread_cond_destroy(&schC);
    pthread_mutex_destroy(&lock);
    pthread_mutex_destroy(&print);
+
 }

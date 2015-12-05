@@ -17,7 +17,7 @@
 using namespace std;
 
 #define MAX_CPU_TIME 40 // Maximum CPU time any process can require
-#define NUMBER_OF_PROCESSES 10 // Number of processes to create as the input set
+#define NUMBER_OF_PROCESSES 5000 // Number of processes to create as the input set
 
 void create_processes(vector<Process> & processes);
 void reset_processes(vector<Process> processes);
@@ -30,7 +30,7 @@ int main (void) {
 
    srand(time(NULL)); // different seed value for RNG
    create_processes(processes); // populate the vector with processes
-
+   
    cout << "Starting Dynamic Priority-based Round Robin" << endl;
    Dynamic_RRA.simulate_DPRRA(processes);
    cout << "Dynamic Priority-based Round Robin has been completed" << endl;
@@ -89,7 +89,7 @@ void print_data(vector<Process> processes) {
    for (int i = 0; i < NUMBER_OF_PROCESSES; ++i) {
       ft = processes[i].get_completion_time().time_since_epoch().count() -  processes[i].get_arrival_time().time_since_epoch().count();
       
-	cout << "                  flow time = " << ft << endl; // debug printing
+      //	cout << "                  flow time = " << ft << endl; // debug printing
       sum_ft += ft;
       sum_l2 += pow(ft, 2.0);
       sum_cs += processes[i].get_cs_count();
