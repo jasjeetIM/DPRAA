@@ -160,18 +160,11 @@ void * DPRRA::process_adder_thread(void) {
  */
 void * DPRRA::CPU_scheduler_thread(void) {
    DCLLNode *temp;
-   DCLLNode *CPU = 0;
-   bool started = false;
+   DCLLNode *CPU = NULL;
    unsigned int completed_jobs, list_size, num_jobs;
    int total_time, waiting_time;
    float time_quanta, time_remaining;
    chrono::system_clock::time_point completion_time;
-
-   while (CPU == NULL) {
-      pthread_mutex_lock(&lock);
-      CPU = process_list->getHead();
-      pthread_mutex_unlock(&lock);
-   }
 
    completed_jobs = list_size = 0;
 
@@ -180,14 +173,11 @@ void * DPRRA::CPU_scheduler_thread(void) {
    pthread_mutex_unlock(&lock);
 
    // wait until the list has at least 1 process to start
-   while (!started) {
+   while (CPU == NULL) {
       pthread_mutex_lock(&lock);
+      CPU = process_list->getHead();
       list_size = process_list->getSize();
       pthread_mutex_unlock(&lock);
-
-      if (list_size > 0) {
-         started = true;
-      }
    }
 
    // cycling through the list until all jobs are completed
@@ -263,7 +253,6 @@ void DPRRA::simulate_DPRRA(vector<Process> &process_array) {
    for (unsigned int i = 0; i < process_array.size(); ++i) {
       mrgArr[i] = process_array[i].get_time_required();
    }
-
    mergeSort(mrgArr, 0, process_array.size());
 
    q2 = (process_array.size() - 1) / 2;

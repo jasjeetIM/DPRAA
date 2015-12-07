@@ -160,17 +160,10 @@ void * RRA::process_adder_thread(void) {
  */
 void * RRA::CPU_scheduler_thread(void) {
    DCLLNode *temp;
-   DCLLNode *CPU = 0;
-   bool started = false;
+   DCLLNode *CPU = NULL;
    unsigned int completed_jobs, list_size, num_jobs;
    float time_remaining;
    chrono::system_clock::time_point completion_time;
-
-   while (CPU == NULL) {
-      pthread_mutex_lock(&lock);
-      CPU = process_list->getHead();
-      pthread_mutex_unlock(&lock);
-   }
 
    completed_jobs = list_size = 0;
 
@@ -179,14 +172,11 @@ void * RRA::CPU_scheduler_thread(void) {
    pthread_mutex_unlock(&lock);
 
    // wait until the list has at least 1 process to start
-   while (!started) {
+   while (CPU == NULL) {
       pthread_mutex_lock(&lock);
+      CPU = process_list->getHead();
       list_size = process_list->getSize();
       pthread_mutex_unlock(&lock);
-
-      if (list_size > 0) {
-         started = true;
-      }
    }
 
    // cycling through the list until all jobs are completed
@@ -241,10 +231,9 @@ void RRA::simulate_RRA(vector<Process> &process_array) {
    int adder_creation, scheduler_creation;
 
    mrgArr = new int[process_array.size()];
-   for (unsigned int i = 0; i< process_array.size(); ++i) {
+   for (unsigned int i = 0; i < process_array.size(); ++i) {
       mrgArr[i] = process_array[i].get_time_required();
    }
-
    mergeSort(mrgArr, 0, process_array.size());
 
    TQ = mrgArr[(process_array.size() - 1) / 2];
