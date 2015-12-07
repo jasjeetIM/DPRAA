@@ -212,18 +212,15 @@ void * DPRRA::CPU_scheduler_thread(void) {
          }
 
          CPU->getData()->update_cs_count();
-         temp = CPU->getNext();
 
+         temp = CPU->getNext();
          if (time_remaining <= 0.00) {
             completion_time = chrono::system_clock::now();
             CPU->getData()->set_completion_time(completion_time);
             ++completed_jobs;
-
             process_list->removeNode(CPU);
-            CPU = temp;
-         } else {
-            CPU = CPU->getNext();
          }
+         CPU = temp;
          pthread_mutex_unlock(&lock);
       }
    }

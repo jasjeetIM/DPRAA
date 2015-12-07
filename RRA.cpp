@@ -201,12 +201,9 @@ void * RRA::CPU_scheduler_thread(void) {
             completion_time = chrono::system_clock::now();
             CPU->getData()->set_completion_time(completion_time);
             ++completed_jobs;
-
             process_list->removeNode(CPU);
-            CPU = temp;
-         } else {
-            CPU = CPU->getNext();
          }
+         CPU = temp;
          pthread_mutex_unlock(&lock);
       }
    }
