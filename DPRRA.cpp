@@ -14,7 +14,7 @@
  *        Output: none
  */
 DPRRA::DPRRA() {
-   process_list = new DCLL;
+   process_list =new DCLL; 
 }
 
 /*
@@ -25,6 +25,7 @@ DPRRA::DPRRA() {
  */
 DPRRA::~DPRRA() {
    delete process_list;
+ //  delete [] mrgArr; 
 }
 
 /*
@@ -55,11 +56,11 @@ void DPRRA:: merge(int arr[], int l, int m, int r) {
    for(j = 0; j < n2; ++j) {
       R[j] = arr[m + 1+ j];
    }
-
    /* Merge the temp arrays back into arr[l..r]*/
    i = j = 0;
    k = l;
-   while (i < n1 && j < n2) {
+   
+  while (i < n1 && j < n2) {
       arr[k++] = L[i] <= R[j] ? L[i++] : R[j++];
    }
 
@@ -74,18 +75,19 @@ void DPRRA:: merge(int arr[], int l, int m, int r) {
    }
 }
 
+
 /*   This function sorts an array of times using mergesort.
  *   	Complexity: O(nlogn)
  *   	Input: Array to be sorted
  *   	Output: None
  */
 void DPRRA::mergeSort(int arr[], int l, int r) {
-   int m;
+   int m = 0;
 
    if (l < r) {
-      m = l + (r - l) / 2;
+      m = l + (r - l)/2;
       mergeSort(arr, l, m);
-      mergeSort(arr, m + 1, r);
+      mergeSort(arr, m+1, r);
       merge(arr, l, m, r);
    }
 }
@@ -165,7 +167,6 @@ void * DPRRA::CPU_scheduler_thread(void) {
    int total_time, waiting_time;
    float time_quanta, time_remaining;
    chrono::system_clock::time_point completion_time;
-
    completed_jobs = list_size = 0;
 
    pthread_mutex_lock(&lock);
@@ -195,10 +196,11 @@ void * DPRRA::CPU_scheduler_thread(void) {
 
             for (int i = 0; i < process_list->getSize(); ++i) {
                waiting_time = CPU->getData()->get_waiting_time();
-               time_quanta = Min_tq + (waiting_time / total_time) * (Max_tq - Min_tq);
+               time_quanta = Min_tq + ((float)waiting_time / total_time) * (Max_tq - Min_tq);
                if (time_quanta > Max_tq) {
                   time_quanta = Max_tq;
                }
+               if (time_quanta == 0) time_quanta = 1; 
                CPU->getData()->set_latest_tq(time_quanta);
                CPU = CPU->getNext();
            }
@@ -226,7 +228,7 @@ void * DPRRA::CPU_scheduler_thread(void) {
    }
 
    pthread_mutex_lock(&print);
-   cout << "ALL JOBS HAVE BEEN COMPLTED." << endl;
+   cout << "ALL JOBS HAVE BEEN COMPLETED." << endl;
    pthread_mutex_unlock(&print);
    return 0;
 }
@@ -245,20 +247,21 @@ void * DPRRA::CPU_scheduler_thread(void) {
 void DPRRA::simulate_DPRRA(vector<Process> &process_array) {
    int adder_creation, scheduler_creation;
    int q1, q2, q3;
-
    mrgArr = new int[process_array.size()];
    for (unsigned int i = 0; i < process_array.size(); ++i) {
       mrgArr[i] = process_array[i].get_time_required();
    }
-   mergeSort(mrgArr, 0, process_array.size());
-
+   
+  mergeSort(mrgArr, 0, process_array.size());
+   
    q2 = (process_array.size() - 1) / 2;
    q1 = q2 / 2;
    q3 = q1 + q2;
+   
    Min_tq  = mrgArr[q1];
    Max_tq  = mrgArr[q3];
    cout << "Min " << Min_tq << ", Max " << Max_tq << endl;
-
+   if (Min_tq == 0) Min_tq = 1; 
    pthread_mutex_init(&lock, 0);
    array_pointer = &process_array;
    pthread_mutex_init(&print, 0);
@@ -275,7 +278,6 @@ void DPRRA::simulate_DPRRA(vector<Process> &process_array) {
       cout << "Error: unable to create thread," << scheduler_creation << endl;
       exit(-1);
    }
-
    pthread_join(adder, 0);
    pthread_join(scheduler, 0);
    pthread_cond_destroy(&schC);

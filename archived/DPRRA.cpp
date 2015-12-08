@@ -1,50 +1,48 @@
-// project/RRA.cpp
-// Round Robin Algorithm
+// project/DPRRA.cpp
+// Dynamic Priority-based Round Robin Algorithm
 // ----------------------------------------------
 // Authors:  Jasjeet Dhaliwal, Sui Fung Alex Wong
 // Date:     11/23/2015
 
-#include "RRA.hpp"
+#include "DPRRA.hpp"
 
 /*
- * This is the constructor for a RRA object which contains a DCLL.
+ * This is the constructor for a DPRRA object which contains a DCLL.
  * finish the job.
  *    Complexity: O(1)
  *         Input: none
  *        Output: none
  */
-RRA::RRA() {
+DPRRA::DPRRA() {
    process_list = new DCLL;
 }
 
 /*
- * This is the destructor for RRA which deletes the DCLL upon being called.
+ * This is the destructor for DPRRA which deletes the DCLL upon being called.
  *    Complexity: O(1)
  *         Input: none
  *        Output: none
  */
-RRA::~RRA() {
+DPRRA::~DPRRA() {
    delete process_list;
-   //delete [] mrgArr;
 }
 
 /*
  *  This function returns a pointer to the DCLL.
- *    Complexity: O(1)
+ *         Complexity: O(1)
  *         Input: none
  *        Output: process list
  */
-DCLL * RRA::getList() {
+DCLL * DPRRA::getList() {
    return process_list;
 }
-
 
 /* This function uses merges sorted arrays.
  *    Complexity: O(n)
  *         Input: Two int arrays to be merged
  *        Output: none
  */
-void RRA::merge(int arr[], int l, int m, int r) {
+void DPRRA:: merge(int arr[], int l, int m, int r) {
    int i, j, k;
    int n1 = m - l + 1;
    int n2 =  r - m;
@@ -55,7 +53,7 @@ void RRA::merge(int arr[], int l, int m, int r) {
       L[i] = arr[l + i];
    }
    for(j = 0; j < n2; ++j) {
-      R[j] = arr[m + 1 + j];
+      R[j] = arr[m + 1+ j];
    }
 
    /* Merge the temp arrays back into arr[l..r]*/
@@ -76,12 +74,12 @@ void RRA::merge(int arr[], int l, int m, int r) {
    }
 }
 
-/* This function sorts an array of times using mergesort.
- *    Complexity: O(n log n)
- *         Input: Array to be sorted
- *        Output: None
+/*   This function sorts an array of times using mergesort.
+ *   	Complexity: O(nlogn)
+ *   	Input: Array to be sorted
+ *   	Output: None
  */
-void RRA::mergeSort(int arr[], int l, int r) {
+void DPRRA::mergeSort(int arr[], int l, int r) {
    int m;
 
    if (l < r) {
@@ -99,8 +97,8 @@ void RRA::mergeSort(int arr[], int l, int r) {
  *         Input: param
  *        Output: pointer to the thread
  */
-void * RRA::process_adder(void * param) {
-   RRA *non_static_object = (RRA *)param;
+void * DPRRA::process_adder(void * param) {
+   DPRRA *non_static_object = (DPRRA *)param;
    non_static_object->process_adder_thread();
    pthread_exit(0);
 }
@@ -112,21 +110,22 @@ void * RRA::process_adder(void * param) {
  *         Input: param
  *        Output: pointer to the thread
  */
-void * RRA::CPU_scheduler(void * param) {
-   RRA *non_static_object = (RRA *)param;
+void * DPRRA::CPU_scheduler(void * param) {
+   DPRRA *non_static_object = (DPRRA *)param;
    non_static_object->CPU_scheduler_thread();
    pthread_exit(0);
 }
 
+
 /*
  * This is a member function that adds new DCLLNodes to the DCLL. Each node
  * contains a process from the process array that is passed to the
- * simulate_RRA() function.
+ * simulate_DPRRA() function.
  *    Complexity: O(n)
  *         Input: none
  *        Output: pointer to the thread
  */
-void * RRA::process_adder_thread(void) {
+void * DPRRA::process_adder_thread(void) {
    chrono::system_clock::time_point curr;
 
    pthread_mutex_lock(&lock);
@@ -137,6 +136,7 @@ void * RRA::process_adder_thread(void) {
       curr = chrono::system_clock::now();
       pthread_mutex_lock(&lock);
       (*array_pointer)[i].set_arrival_time(curr);
+      (*array_pointer)[i].set_latest_tq(float(Min_tq));
       process_list->insertNode(&(*array_pointer)[i]);
       pthread_cond_signal(&schC);
       pthread_mutex_unlock(&lock);
@@ -148,10 +148,9 @@ void * RRA::process_adder_thread(void) {
    return 0;
 }
 
-
 /*
  * This is a member function that processes each node in the DCLL using
- * the RRA algorithm. It calculates time_quanta for every node and then
+ * the DPRRA algorithm. It calculates time_quanta for every node and then
  * processes that node. Once the node has been processed (job has been
  * completed), it then removes that node from the DCLL and marks the completion
  * time in the job (Process).
@@ -159,11 +158,12 @@ void * RRA::process_adder_thread(void) {
  *         Input: none
  *        Output: pointer to the thread
  */
-void * RRA::CPU_scheduler_thread(void) {
+void * DPRRA::CPU_scheduler_thread(void) {
    DCLLNode *temp;
    DCLLNode *CPU = NULL;
    unsigned int completed_jobs, list_size, num_jobs;
-   float time_remaining;
+   int total_time, waiting_time;
+   float time_quanta, time_remaining;
    chrono::system_clock::time_point completion_time;
 
    completed_jobs = list_size = 0;
@@ -189,7 +189,23 @@ void * RRA::CPU_scheduler_thread(void) {
       if (list_size > 0) { // processing of one job at a time
          pthread_mutex_lock(&lock);
 
-         time_remaining = CPU->getData()->get_time_remaining() - TQ;
+         // Recalculating time_quanta every time the CPU is equal to the head.
+         if (CPU == process_list->getHead()) {
+            total_time = process_list->getTotalTime();
+
+            for (int i = 0; i < process_list->getSize(); ++i) {
+               waiting_time = CPU->getData()->get_waiting_time();
+               time_quanta = Min_tq + (waiting_time / total_time) * (Max_tq - Min_tq);
+               if (time_quanta > Max_tq) {
+                  time_quanta = Max_tq;
+               }
+               CPU->getData()->set_latest_tq(time_quanta);
+               CPU = CPU->getNext();
+           }
+         }
+         CPU = process_list->getHead();
+
+         time_remaining = CPU->getData()->get_time_remaining() - CPU->getData()->get_latest_tq();
          CPU->getData()->set_time_remaining(time_remaining);
          while (CPU->getNext() == NULL) {
             pthread_cond_wait(&schC, &lock);
@@ -210,10 +226,11 @@ void * RRA::CPU_scheduler_thread(void) {
    }
 
    pthread_mutex_lock(&print);
-   cout << "ALL JOBS HAVE BEEN COMPLETED." << endl;
+   cout << "ALL JOBS HAVE BEEN COMPLTED." << endl;
    pthread_mutex_unlock(&print);
    return 0;
 }
+
 
 /*
  * This is the primary function that spawns two threads:
@@ -225,16 +242,23 @@ void * RRA::CPU_scheduler_thread(void) {
  *         Input: array of processes
  *        Output: none
  */
-void RRA::simulate_RRA(vector<Process> &process_array) {
+void DPRRA::simulate_DPRRA(vector<Process> &process_array) {
    int adder_creation, scheduler_creation;
+   int q1, q2, q3;
+
    mrgArr = new int[process_array.size()];
    for (unsigned int i = 0; i < process_array.size(); ++i) {
       mrgArr[i] = process_array[i].get_time_required();
    }
    mergeSort(mrgArr, 0, process_array.size());
 
-   TQ = mrgArr[(process_array.size() - 1) / 2];
-   if (TQ == 0) TQ = 1; 
+   q2 = (process_array.size() - 1) / 2;
+   q1 = q2 / 2;
+   q3 = q1 + q2;
+   Min_tq  = mrgArr[q1];
+   Max_tq  = mrgArr[q3];
+   cout << "Min " << Min_tq << ", Max " << Max_tq << endl;
+
    pthread_mutex_init(&lock, 0);
    array_pointer = &process_array;
    pthread_mutex_init(&print, 0);
@@ -251,10 +275,11 @@ void RRA::simulate_RRA(vector<Process> &process_array) {
       cout << "Error: unable to create thread," << scheduler_creation << endl;
       exit(-1);
    }
-   
+
    pthread_join(adder, 0);
    pthread_join(scheduler, 0);
    pthread_cond_destroy(&schC);
    pthread_mutex_destroy(&lock);
    pthread_mutex_destroy(&print);
+
 }
