@@ -59,9 +59,9 @@ int main (int argc, char *argv[]) {
    }
     int counter = 0; 
   
-   for (int i =1; i <=1000; i+=5)
+   for (int i =1; i <=5000; i+=5)
    { 
-	j = i*2; 
+	j = i*5; 
         maxTime = MAX_CPU_TIME*i;    
         numProcess = NUMBER_OF_PROCESSES*j; 
   
