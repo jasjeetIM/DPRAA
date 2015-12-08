@@ -42,7 +42,7 @@ int main (int argc, char *argv[]) {
    }
 
    if (RRAFile.is_open()) {
-      RRAFile << "#Processes;Avg_FT_RRA;l2Norm_RRAAvg_CS_RRA;Avg_TP_RRA;Avg_TQ_RRA\n";
+      RRAFile << "#Processes;Avg_FT_RRA;l2Norm_RRA;Avg_CS_RRA;Avg_TP_RRA;Avg_TQ_RRA\n";
    } else {
       cout << "Error in opening file.\n";
    }
