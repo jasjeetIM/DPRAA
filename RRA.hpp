@@ -30,7 +30,7 @@ class RRA {
       pthread_cond_t schC;
       pthread_mutex_t lock, print;
       int * mrgArr;
-      int TQ;
+      float TQ;
 
    public:
       RRA(); // constructor
@@ -43,6 +43,7 @@ class RRA {
       void simulate_RRA(vector<Process> &process_array); // primary funciton that spawns both adder thread and the scheduler thread
       void merge(int arr[], int l, int m, int r);
       void mergeSort(int arr[], int l, int r);
+      float get_tq(); 
 };
 
 #endif // RRA_HPP

@@ -38,6 +38,10 @@ DCLL * DPRRA::getList() {
    return process_list;
 }
 
+float DPRRA:: get_avg_tq() {
+    return avg_tq; 
+}
+
 /* This function uses merges sorted arrays.
  *    Complexity: O(n)
  *         Input: Two int arrays to be merged
@@ -200,7 +204,8 @@ void * DPRRA::CPU_scheduler_thread(void) {
                if (time_quanta > Max_tq) {
                   time_quanta = Max_tq;
                }
-               if (time_quanta == 0) time_quanta = 1; 
+               if (time_quanta == 0) time_quanta = 1;
+               avg_tq+=time_quanta;  
                CPU->getData()->set_latest_tq(time_quanta);
                CPU = CPU->getNext();
            }
@@ -226,7 +231,7 @@ void * DPRRA::CPU_scheduler_thread(void) {
          pthread_mutex_unlock(&lock);
       }
    }
-
+   avg_tq = avg_tq/num_jobs; 
    pthread_mutex_lock(&print);
    cout << "ALL JOBS HAVE BEEN COMPLETED." << endl;
    pthread_mutex_unlock(&print);
@@ -247,6 +252,7 @@ void * DPRRA::CPU_scheduler_thread(void) {
 void DPRRA::simulate_DPRRA(vector<Process> &process_array) {
    int adder_creation, scheduler_creation;
    int q1, q2, q3;
+   avg_tq = 0; 
    mrgArr = new int[process_array.size()];
    for (unsigned int i = 0; i < process_array.size(); ++i) {
       mrgArr[i] = process_array[i].get_time_required();

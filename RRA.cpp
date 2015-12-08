@@ -38,7 +38,9 @@ DCLL * RRA::getList() {
    return process_list;
 }
 
-
+float RRA::get_tq() {
+   return TQ; 
+}
 /* This function uses merges sorted arrays.
  *    Complexity: O(n)
  *         Input: Two int arrays to be merged
