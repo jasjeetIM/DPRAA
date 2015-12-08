@@ -31,7 +31,8 @@ class DPRRA {
       pthread_mutex_t lock, print;
       int * mrgArr;
       int Max_tq, Min_tq;
-      float avg_tq; 
+      float avg_tq;
+
    public:
       DPRRA(); // constructor
       ~DPRRA(); // destructor
@@ -43,7 +44,7 @@ class DPRRA {
       void simulate_DPRRA(vector<Process> &process_array); // primary funciton that spawns both adder thread and the scheduler thread
       void merge(int arr[], int l, int m, int r);
       void mergeSort(int arr[], int l, int r);
-      float get_avg_tq(); 
+      float get_avg_tq();
 };
 
 #endif // DPRRA_HPP

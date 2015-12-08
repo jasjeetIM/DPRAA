@@ -14,7 +14,7 @@
  *        Output: none
  */
 DPRRA::DPRRA() {
-   process_list =new DCLL; 
+   process_list = new DCLL;
 }
 
 /*
@@ -25,7 +25,6 @@ DPRRA::DPRRA() {
  */
 DPRRA::~DPRRA() {
    delete process_list;
- //  delete [] mrgArr; 
 }
 
 /*
@@ -38,8 +37,14 @@ DCLL * DPRRA::getList() {
    return process_list;
 }
 
-float DPRRA:: get_avg_tq() {
-    return avg_tq; 
+/*
+ *  This function gets the average time quantum.
+ *         Complexity: O(1)
+ *         Input: none
+ *        Output: average time quantum
+ */
+float DPRRA::get_avg_tq() {
+   return avg_tq;
 }
 
 /* This function uses merges sorted arrays.
@@ -47,7 +52,7 @@ float DPRRA:: get_avg_tq() {
  *         Input: Two int arrays to be merged
  *        Output: none
  */
-void DPRRA:: merge(int arr[], int l, int m, int r) {
+void DPRRA::merge(int arr[], int l, int m, int r) {
    int i, j, k;
    int n1 = m - l + 1;
    int n2 =  r - m;
@@ -63,7 +68,7 @@ void DPRRA:: merge(int arr[], int l, int m, int r) {
    /* Merge the temp arrays back into arr[l..r]*/
    i = j = 0;
    k = l;
-   
+
   while (i < n1 && j < n2) {
       arr[k++] = L[i] <= R[j] ? L[i++] : R[j++];
    }
@@ -89,9 +94,9 @@ void DPRRA::mergeSort(int arr[], int l, int r) {
    int m = 0;
 
    if (l < r) {
-      m = l + (r - l)/2;
+      m = l + (r - l) / 2;
       mergeSort(arr, l, m);
-      mergeSort(arr, m+1, r);
+      mergeSort(arr, m + 1, r);
       merge(arr, l, m, r);
    }
 }
@@ -171,6 +176,7 @@ void * DPRRA::CPU_scheduler_thread(void) {
    int total_time, waiting_time;
    float time_quanta, time_remaining;
    chrono::system_clock::time_point completion_time;
+
    completed_jobs = list_size = 0;
 
    pthread_mutex_lock(&lock);
@@ -203,9 +209,10 @@ void * DPRRA::CPU_scheduler_thread(void) {
                time_quanta = Min_tq + ((float)waiting_time / total_time) * (Max_tq - Min_tq);
                if (time_quanta > Max_tq) {
                   time_quanta = Max_tq;
+               } else if (time_quanta == 0) {
+                  time_quanta = 1;
                }
-               if (time_quanta == 0) time_quanta = 1;
-               avg_tq+=time_quanta;  
+               avg_tq += time_quanta;
                CPU->getData()->set_latest_tq(time_quanta);
                CPU = CPU->getNext();
            }
@@ -231,7 +238,8 @@ void * DPRRA::CPU_scheduler_thread(void) {
          pthread_mutex_unlock(&lock);
       }
    }
-   avg_tq = avg_tq/num_jobs; 
+
+   avg_tq = avg_tq / num_jobs;
    pthread_mutex_lock(&print);
    cout << "ALL JOBS HAVE BEEN COMPLETED." << endl;
    pthread_mutex_unlock(&print);
@@ -252,22 +260,24 @@ void * DPRRA::CPU_scheduler_thread(void) {
 void DPRRA::simulate_DPRRA(vector<Process> &process_array) {
    int adder_creation, scheduler_creation;
    int q1, q2, q3;
-   avg_tq = 0; 
+
+   avg_tq = 0;
    mrgArr = new int[process_array.size()];
    for (unsigned int i = 0; i < process_array.size(); ++i) {
       mrgArr[i] = process_array[i].get_time_required();
    }
-   
-  mergeSort(mrgArr, 0, process_array.size());
-   
+   mergeSort(mrgArr, 0, process_array.size());
+
    q2 = (process_array.size() - 1) / 2;
    q1 = q2 / 2;
    q3 = q1 + q2;
-   
-   Min_tq  = mrgArr[q1];
-   Max_tq  = mrgArr[q3];
+   Min_tq = mrgArr[q1];
+   Max_tq = mrgArr[q3];
+   if (Min_tq == 0) {
+      Min_tq = 1;
+   }
    cout << "Min " << Min_tq << ", Max " << Max_tq << endl;
-   if (Min_tq == 0) Min_tq = 1; 
+
    pthread_mutex_init(&lock, 0);
    array_pointer = &process_array;
    pthread_mutex_init(&print, 0);
@@ -284,10 +294,10 @@ void DPRRA::simulate_DPRRA(vector<Process> &process_array) {
       cout << "Error: unable to create thread," << scheduler_creation << endl;
       exit(-1);
    }
+
    pthread_join(adder, 0);
    pthread_join(scheduler, 0);
    pthread_cond_destroy(&schC);
    pthread_mutex_destroy(&lock);
    pthread_mutex_destroy(&print);
-
 }

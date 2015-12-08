@@ -25,7 +25,6 @@ RRA::RRA() {
  */
 RRA::~RRA() {
    delete process_list;
-   //delete [] mrgArr;
 }
 
 /*
@@ -38,9 +37,16 @@ DCLL * RRA::getList() {
    return process_list;
 }
 
+/*
+ *  This function gets the time quantum.
+ *    Complexity: O(1)
+ *         Input: none
+ *        Output: time quantum
+ */
 float RRA::get_tq() {
-   return TQ; 
+   return TQ;
 }
+
 /* This function uses merges sorted arrays.
  *    Complexity: O(n)
  *         Input: Two int arrays to be merged
@@ -229,6 +235,7 @@ void * RRA::CPU_scheduler_thread(void) {
  */
 void RRA::simulate_RRA(vector<Process> &process_array) {
    int adder_creation, scheduler_creation;
+
    mrgArr = new int[process_array.size()];
    for (unsigned int i = 0; i < process_array.size(); ++i) {
       mrgArr[i] = process_array[i].get_time_required();
@@ -236,7 +243,10 @@ void RRA::simulate_RRA(vector<Process> &process_array) {
    mergeSort(mrgArr, 0, process_array.size());
 
    TQ = mrgArr[(process_array.size() - 1) / 2];
-   if (TQ == 0) TQ = 1; 
+   if (TQ == 0) {
+      TQ = 1;
+   }
+
    pthread_mutex_init(&lock, 0);
    array_pointer = &process_array;
    pthread_mutex_init(&print, 0);
@@ -253,7 +263,7 @@ void RRA::simulate_RRA(vector<Process> &process_array) {
       cout << "Error: unable to create thread," << scheduler_creation << endl;
       exit(-1);
    }
-   
+
    pthread_join(adder, 0);
    pthread_join(scheduler, 0);
    pthread_cond_destroy(&schC);
