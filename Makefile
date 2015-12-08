@@ -4,8 +4,8 @@ DEBUG = -g
 CFLAGS = -Wall -c $(DEBUG)
 LFLAGS = -Wall $(DEBUG)
 
-TP:    $(OBJS)
-	$(CC) $(LFLAGS) $(OBJS) -o TP -lpthread
+P3:    $(OBJS)
+	$(CC) $(LFLAGS) $(OBJS) -o P3 -lpthread
 
 main.o: main.cpp Process.hpp DPRRA.hpp
 	$(CC) $(CFLAGS) main.cpp
@@ -26,8 +26,8 @@ Process.o: Process.hpp Process.cpp
 	$(CC) $(CFLAGS) Process.cpp
 
 clean:
-	\rm *.o TP
+	\rm *.o P3
 
 tar:
-	tar cfv TP.tar main.cpp DPRRA.hpp DPRRA.cpp RRA.hpp RRA.cpp DCLL.hpp DCLL.cpp \
+	tar cfv P3.tar main.cpp DPRRA.hpp DPRRA.cpp RRA.hpp RRA.cpp DCLL.hpp DCLL.cpp \
 					DCLLNode.hpp DCLLNode.cpp Process.hpp Process.cpp
